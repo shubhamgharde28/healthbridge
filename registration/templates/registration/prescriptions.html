@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescriptions | Rural Telemedicine Platform</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #eef4fb; color: #1c2030; margin: 0; }
+        .page { max-width: 980px; margin: 40px auto; padding: 26px; background: white; border-radius: 14px; box-shadow: 0 16px 32px rgba(0,0,0,0.08); }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; gap: 16px; }
+        .button { display: inline-block; padding: 12px 18px; border-radius: 10px; background: #2f6bed; color: white; text-decoration: none; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 12px; border-bottom: 1px solid #e8eef8; text-align: left; }
+        th { background: #f4f9ff; }
+        .empty-state { padding: 24px; background: #f7faff; border-radius: 14px; }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <div class="top-bar">
+            <div>
+                <h1>Prescriptions</h1>
+                <p>Upload and review prescription documents for your patients.</p>
+            </div>
+            <a class="button" href="{% url 'add_prescription' %}">Upload Prescription</a>
+        </div>
+        {% if prescriptions %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Patient</th>
+                        <th>Uploaded</th>
+                        <th>File</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for prescription in prescriptions %}
+                        <tr>
+                            <td>{{ prescription.title }}</td>
+                            <td>{{ prescription.patient.name }}</td>
+                            <td>{{ prescription.created_at|date:'Y-m-d' }}</td>
+                            <td>{% if prescription.uploaded_file %}<a href="{{ prescription.uploaded_file.url }}" target="_blank">Download</a>{% else %}-{% endif %}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="empty-state">
+                <p>No prescriptions uploaded yet. Use the button above to add one.</p>
+            </div>
+        {% endif %}
+        <p><a href="{% url 'dashboard' %}">Back to Dashboard</a></p>
+    </main>
+</body>
+</html>

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} | Rural Telemedicine Platform</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #eef4fb; margin: 0; color: #1c2030; }
+        .page { max-width: 640px; margin: 44px auto; padding: 30px; background: white; border-radius: 14px; box-shadow: 0 18px 36px rgba(0,0,0,0.07); }
+        h1 { margin-top: 0; }
+        .form-field { margin-bottom: 16px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; }
+        .form-input, .form-select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccd7eb; }
+        .submit-button { width: 100%; padding: 14px; background: #2f6bed; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; }
+        .message { margin-bottom: 16px; padding: 12px; border-radius: 10px; background: #e9f2ff; }
+    </style>
+</head>
+<body>
+    <main class="page">
+        <h1>{{ title }}</h1>
+        {% for message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="form-field">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="message">{{ field.errors|first }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            <button class="submit-button" type="submit">Save Follow-up</button>
+        </form>
+        <p><a href="{% url 'followups' %}">Back to Follow-ups</a></p>
+    </main>
+</body>
+</html>

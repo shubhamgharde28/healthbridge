@@ -1,0 +1,22 @@
+{% extends "registration/base.html" %}
+{% block title %}Register Patient | Rural Telemedicine{% endblock %}
+{% block content %}
+<div class="card">
+    <h1 class="page-title">{{ title }}</h1>
+    <p class="page-subtitle">Enter patient details for rural telemedicine outreach.</p>
+    <form method="post" class="grid" style="gap: 18px; margin-top: 24px;">
+        {% csrf_token %}
+        {% for field in form %}
+            <div class="form-row">
+                {{ field.label_tag }}
+                {{ field }}
+                {% if field.errors %}<div class="message error">{{ field.errors|first }}</div>{% endif %}
+            </div>
+        {% endfor %}
+        <div class="form-actions">
+            <button class="button" type="submit">Save Patient</button>
+            <a class="button secondary" href="{% url 'patients' %}">Back to Patients</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

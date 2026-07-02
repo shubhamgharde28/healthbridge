@@ -1,0 +1,34 @@
+{% extends "registration/base.html" %}
+{% block title %}Patients | Rural Telemedicine{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="grid" style="grid-template-columns: 1fr auto; align-items: center; gap: 12px;">
+        <div>
+            <h1 class="page-title">Patients</h1>
+            <p class="page-subtitle">View all patient registrations created by your account.</p>
+        </div>
+        <a class="button" href="{% url 'add_patient' %}">Add Patient</a>
+    </div>
+    <div class="table-wrapper" style="margin-top: 24px;">
+        {% if patients %}
+            <table>
+                <thead>
+                    <tr><th>Name</th><th>Age</th><th>Village</th><th>Phone</th></tr>
+                </thead>
+                <tbody>
+                    {% for patient in patients %}
+                        <tr>
+                            <td>{{ patient.name }}</td>
+                            <td>{{ patient.age }}</td>
+                            <td>{{ patient.village }}</td>
+                            <td>{{ patient.phone|default:'-' }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="message" style="background: #eef5ff; color: #234a9e;">No patients registered yet. Click "Add Patient" to begin.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

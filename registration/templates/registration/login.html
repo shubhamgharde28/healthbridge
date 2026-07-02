@@ -1,0 +1,23 @@
+{% extends "registration/base.html" %}
+{% block title %}Login | Rural Telemedicine{% endblock %}
+{% block content %}
+<div class="card">
+    <h1 class="page-title">Login</h1>
+    <p class="page-subtitle">Sign in with your registered email to access the telemedicine dashboard.</p>
+    <form method="post" class="grid" style="gap: 18px; margin-top: 24px;">
+        {% csrf_token %}
+        <div class="form-row">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" required placeholder="example@domain.com">
+        </div>
+        <div class="form-row">
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" required placeholder="Password">
+        </div>
+        <div class="form-actions">
+            <button class="button" type="submit">Login</button>
+            <a class="button secondary" href="{% url 'signup' %}">Create Account</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

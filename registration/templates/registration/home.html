@@ -1,0 +1,62 @@
+{% extends "registration/base.html" %}
+{% block title %}Dashboard | Rural Telemedicine{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="grid" style="grid-template-columns: 1fr auto; align-items: start; gap: 22px;">
+        <div>
+            <h1 class="page-title">Dashboard</h1>
+            <p class="page-subtitle">Quickly manage patients, consultations, prescriptions, follow-ups, and medical records from a single screen.</p>
+        </div>
+        <div class="actions" style="justify-content: flex-end;">
+            <a class="button" href="{% url 'add_patient' %}">Register Patient</a>
+            <a class="button secondary" href="{% url 'consultations' %}">View Consultations</a>
+        </div>
+    </div>
+    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top: 26px;">
+        <div class="card" style="padding: 22px;">
+            <h2 style="margin-top: 0;">Recent Patients</h2>
+            <p class="secondary-text">Most recent patient registrations from your practice.</p>
+            {% if patients %}
+                <ul style="margin: 18px 0 0; padding-left: 20px;">
+                    {% for patient in patients %}
+                        <li>{{ patient.name }} - {{ patient.village }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="secondary-text">No patients yet. Start by registering a new patient.</p>
+            {% endif %}
+        </div>
+        <div class="card" style="padding: 22px;">
+            <h2 style="margin-top: 0;">Upcoming Consultations</h2>
+            <p class="secondary-text">Scheduled video consultations waiting in your queue.</p>
+            {% if upcoming_sessions %}
+                <ul style="margin: 18px 0 0; padding-left: 20px;">
+                    {% for session in upcoming_sessions %}
+                        <li>{{ session.patient.name }} � {{ session.scheduled_at|date:'M d, Y H:i' }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="secondary-text">No upcoming consultations scheduled.</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="card" style="margin-top: 24px;">
+        <h2>Core Platform Features</h2>
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-top: 18px;">
+            {% for feature in features %}
+                <div class="feature-item">{{ feature }}</div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="card" style="margin-top: 24px;">
+        <h2>Quick Actions</h2>
+        <div class="actions">
+            <a class="button" href="{% url 'add_patient' %}">New Patient</a>
+            <a class="button" href="{% url 'add_consultation' %}">New Consultation</a>
+            <a class="button" href="{% url 'add_prescription' %}">Upload Prescription</a>
+            <a class="button" href="{% url 'add_followup' %}">Add Follow-up</a>
+            <a class="button" href="{% url 'add_medical_record' %}">Save Record</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

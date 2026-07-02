@@ -1,0 +1,34 @@
+{% extends "registration/base.html" %}
+{% block title %}Consultations | Rural Telemedicine{% endblock %}
+{% block content %}
+<div class="card">
+    <div class="grid" style="grid-template-columns: 1fr auto; align-items: center; gap: 12px;">
+        <div>
+            <h1 class="page-title">Consultations</h1>
+            <p class="page-subtitle">Track scheduled video consultations with your patients.</p>
+        </div>
+        <a class="button" href="{% url 'add_consultation' %}">Schedule Consultation</a>
+    </div>
+    <div class="table-wrapper" style="margin-top: 24px;">
+        {% if consultations %}
+            <table>
+                <thead>
+                    <tr><th>Patient</th><th>Scheduled At</th><th>Video Link</th><th>Status</th></tr>
+                </thead>
+                <tbody>
+                    {% for consultation in consultations %}
+                        <tr>
+                            <td>{{ consultation.patient.name }}</td>
+                            <td>{{ consultation.scheduled_at|date:'Y-m-d H:i' }}</td>
+                            <td>{% if consultation.video_link %}<a href="{{ consultation.video_link }}" target="_blank">Join</a>{% else %}-{% endif %}</td>
+                            <td>{{ consultation.get_status_display }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="message" style="background: #eef5ff; color: #234a9e;">No consultations scheduled yet.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

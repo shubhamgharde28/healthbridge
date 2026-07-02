@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Rural Telemedicine Platform{% endblock %}</title>
+    <style>
+        :root {
+            --bg: #f2f6ff;
+            --surface: #ffffff;
+            --surface-strong: #e7efff;
+            --text: #1d2738;
+            --muted: #5b6678;
+            --primary: #2f6bed;
+            --primary-strong: #214bb8;
+            --border: #dbe5f3;
+        }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); }
+        a { color: var(--primary); text-decoration: none; }
+        .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+        .site-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 18px 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+        .brand { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; }
+        .nav-links { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+        .nav-links a { padding: 10px 14px; border-radius: 999px; background: rgba(47, 107, 237, 0.1); color: var(--primary); font-weight: 600; }
+        .nav-links a.cta { background: var(--primary); color: white; }
+        .page { width: min(1120px, calc(100% - 32px)); margin: 28px auto; padding: 0; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 18px 42px rgba(17, 31, 72, 0.06); padding: 28px; }
+        .grid { display: grid; gap: 20px; }
+        .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 14px; background: var(--primary); color: white; font-weight: 600; border: none; cursor: pointer; }
+        .button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
+        .page-title { margin: 0 0 8px; font-size: 2rem; line-height: 1.1; }
+        .page-subtitle { margin: 0; color: var(--muted); }
+        .message-list { display: grid; gap: 12px; margin-bottom: 20px; }
+        .message { border-radius: 16px; padding: 14px 18px; }
+        .message.success { background: #e7f5ed; color: #1c5d35; }
+        .message.error { background: #ffe8e8; color: #8a1e1e; }
+        .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 560px; }
+        th, td { padding: 16px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--surface-strong); font-weight: 700; }
+        tr:last-child td { border-bottom: none; }
+        input, select, textarea { width: 100%; border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; background: #fff; font: inherit; color: var(--text); }
+        textarea { resize: vertical; }
+        .form-row { display: grid; gap: 16px; }
+        .form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
+        .secondary-text { color: var(--muted); }
+        .footer { padding: 22px 28px; text-align: center; color: var(--muted); font-size: 0.95rem; }
+        @media(max-width: 720px) {
+            .site-header { padding: 16px; }
+            .page { margin: 20px auto; }
+            .nav-links { width: 100%; justify-content: flex-start; }
+            .button, .nav-links a { width: 100%; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-shell">
+    <header class="site-header">
+        <div class="brand">Rural Telemedicine</div>
+        <div class="nav-links">
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'dashboard' %}">Dashboard</a>
+                <a href="{% url 'patients' %}">Patients</a>
+                <a href="{% url 'consultations' %}">Consultations</a>
+                <a href="{% url 'prescriptions' %}">Prescriptions</a>
+                <a href="{% url 'followups' %}">Follow-ups</a>
+                <a href="{% url 'medical_records' %}">Records</a>
+                <a class="cta" href="{% url 'logout' %}">Logout</a>
+            {% else %}
+                <a href="{% url 'landing' %}">Home</a>
+                <a href="{% url 'login' %}">Login</a>
+                <a class="cta" href="{% url 'signup' %}">Get Started</a>
+            {% endif %}
+        </div>
+    </header>
+    <main class="page">
+        {% if messages %}
+            <div class="message-list">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="footer">Rural Telemedicine Platform - Patient registration, video consultation, prescriptions, follow-up, and records.</footer>
+</div>
+</body>
+</html>

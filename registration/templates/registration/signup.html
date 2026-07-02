@@ -1,0 +1,33 @@
+{% extends "registration/base.html" %}
+{% block title %}Sign Up | Rural Telemedicine{% endblock %}
+{% block content %}
+<div class="card">
+    <h1 class="page-title">Sign Up</h1>
+    <p class="page-subtitle">Register with your email and create a secure account for village telemedicine.</p>
+    <form method="post" class="grid" style="gap: 18px; margin-top: 24px;">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <div class="message error">{{ form.non_field_errors|first }}</div>
+        {% endif %}
+        <div class="form-row">
+            {{ form.email.label_tag }}
+            {{ form.email }}
+            {% if form.email.errors %}<div class="message error">{{ form.email.errors|first }}</div>{% endif %}
+        </div>
+        <div class="form-row">
+            {{ form.password1.label_tag }}
+            {{ form.password1 }}
+            {% if form.password1.errors %}<div class="message error">{{ form.password1.errors|first }}</div>{% endif %}
+        </div>
+        <div class="form-row">
+            {{ form.password2.label_tag }}
+            {{ form.password2 }}
+            {% if form.password2.errors %}<div class="message error">{{ form.password2.errors|first }}</div>{% endif %}
+        </div>
+        <div class="form-actions">
+            <button class="button" type="submit">Create Account</button>
+            <a class="button secondary" href="{% url 'login' %}">Already have an account?</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
