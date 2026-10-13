@@ -3,81 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Rural Telemedicine Platform{% endblock %}</title>
+    <meta name="theme-color" content="#f7faf8">
+    <title>{% block title %}HealthBridge | Care, connected{% endblock %}</title>
     <style>
         :root {
-            --bg: #f2f6ff;
+            color-scheme: light;
+            --page: #f7faf8;
             --surface: #ffffff;
-            --surface-strong: #e7efff;
-            --text: #1d2738;
-            --muted: #5b6678;
-            --primary: #2f6bed;
-            --primary-strong: #214bb8;
-            --border: #dbe5f3;
+            --surface-soft: #eff6f2;
+            --ink: #16352e;
+            --muted: #62756f;
+            --primary: #16836a;
+            --primary-dark: #10664f;
+            --primary-pale: #e4f4ed;
+            --border: #dce8e2;
+            --shadow: 0 18px 48px rgba(24, 66, 54, 0.08);
         }
         * { box-sizing: border-box; }
-        body { margin: 0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); }
-        a { color: var(--primary); text-decoration: none; }
+        html { scroll-behavior: smooth; }
+        body {
+            min-width: 320px;
+            margin: 0;
+            background: var(--page);
+            color: var(--ink);
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: var(--primary-dark); text-decoration: none; }
+        a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+            outline: 3px solid rgba(22, 131, 106, 0.28);
+            outline-offset: 3px;
+        }
         .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
-        .site-header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 18px 28px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
-        .brand { font-size: 1.2rem; font-weight: 700; letter-spacing: -0.02em; }
-        .nav-links { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
-        .nav-links a { padding: 10px 14px; border-radius: 999px; background: rgba(47, 107, 237, 0.1); color: var(--primary); font-weight: 600; }
-        .nav-links a.cta { background: var(--primary); color: white; }
-        .page { width: min(1120px, calc(100% - 32px)); margin: 28px auto; padding: 0; }
-        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 18px 42px rgba(17, 31, 72, 0.06); padding: 28px; }
+        .site-header {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.94);
+            border-bottom: 1px solid rgba(220, 232, 226, 0.9);
+        }
+        .header-inner {
+            width: min(1240px, calc(100% - 48px));
+            min-height: 82px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 28px;
+        }
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--ink);
+            font-size: 1.18rem;
+            font-weight: 800;
+            letter-spacing: -0.045em;
+            white-space: nowrap;
+        }
+        .brand-mark {
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 7px 16px rgba(22, 131, 106, 0.2);
+        }
+        .brand-mark svg { width: 23px; height: 23px; }
+        .nav-links { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 10px; }
+        .nav-links a {
+            padding: 9px 12px;
+            border-radius: 10px;
+            color: #50645e;
+            font-size: 0.91rem;
+            font-weight: 650;
+            transition: background 160ms ease, color 160ms ease;
+        }
+        .nav-links a:hover { background: var(--surface-soft); color: var(--primary-dark); }
+        .nav-links a.cta {
+            margin-left: 7px;
+            padding: 10px 17px;
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 6px 15px rgba(22, 131, 106, 0.16);
+        }
+        .nav-links a.cta:hover { background: var(--primary-dark); color: #fff; }
+        .page { width: min(1160px, calc(100% - 48px)); margin: 48px auto 64px; flex: 1; }
+        .card {
+            padding: 30px;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            background: var(--surface);
+            box-shadow: var(--shadow);
+        }
         .grid { display: grid; gap: 20px; }
-        .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px; border-radius: 14px; background: var(--primary); color: white; font-weight: 600; border: none; cursor: pointer; }
-        .button.secondary { background: transparent; border: 1px solid var(--border); color: var(--text); }
-        .page-title { margin: 0 0 8px; font-size: 2rem; line-height: 1.1; }
+        .button {
+            display: inline-flex;
+            min-height: 48px;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 12px 19px;
+            border: 1px solid transparent;
+            border-radius: 12px;
+            background: var(--primary);
+            color: #fff;
+            font: inherit;
+            font-weight: 700;
+            line-height: 1.2;
+            cursor: pointer;
+            transition: background 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+        }
+        .button:hover { transform: translateY(-1px); background: var(--primary-dark); box-shadow: 0 8px 18px rgba(22, 131, 106, 0.18); }
+        .button.secondary { border-color: var(--border); background: #fff; color: var(--ink); box-shadow: none; }
+        .button.secondary:hover { border-color: #b7d1c5; background: var(--surface-soft); }
+        .page-title { margin: 0 0 10px; font-size: clamp(1.8rem, 4vw, 2.5rem); line-height: 1.13; letter-spacing: -0.045em; }
         .page-subtitle { margin: 0; color: var(--muted); }
         .message-list { display: grid; gap: 12px; margin-bottom: 20px; }
-        .message { border-radius: 16px; padding: 14px 18px; }
-        .message.success { background: #e7f5ed; color: #1c5d35; }
-        .message.error { background: #ffe8e8; color: #8a1e1e; }
-        .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
-        .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 560px; }
-        th, td { padding: 16px 14px; text-align: left; border-bottom: 1px solid var(--border); }
-        th { background: var(--surface-strong); font-weight: 700; }
+        .message { padding: 14px 18px; border: 1px solid transparent; border-radius: 13px; }
+        .message.success { border-color: #c7e7d4; background: #eaf7ef; color: #245e3a; }
+        .message.error { border-color: #f2caca; background: #fff0f0; color: #8a3030; }
+        .message.info { border-color: #c8dff0; background: #eef7fc; color: #285675; }
+        .actions, .form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 20px; }
+        .table-wrapper { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; }
+        table { width: 100%; border-collapse: collapse; min-width: 560px; background: var(--surface); }
+        th, td { padding: 15px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { background: var(--surface-soft); color: #39554b; font-size: 0.88rem; font-weight: 750; }
         tr:last-child td { border-bottom: none; }
-        input, select, textarea { width: 100%; border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; background: #fff; font: inherit; color: var(--text); }
+        input, select, textarea {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #cfddd6;
+            border-radius: 11px;
+            background: #fff;
+            color: var(--ink);
+            font: inherit;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); outline: 3px solid rgba(22, 131, 106, 0.12); }
         textarea { resize: vertical; }
+        label { color: #344f46; font-weight: 650; }
         .form-row { display: grid; gap: 16px; }
-        .form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 18px; }
         .secondary-text { color: var(--muted); }
-        .footer { padding: 22px 28px; text-align: center; color: var(--muted); font-size: 0.95rem; }
-        @media(max-width: 720px) {
-            .site-header { padding: 16px; }
-            .page { margin: 20px auto; }
+        .auth-page { width: min(1000px, calc(100% - 48px)); margin: 48px auto 64px; }
+        .auth-card {
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.85fr);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: 26px;
+            background: var(--surface);
+            box-shadow: 0 24px 70px rgba(24, 66, 54, 0.11);
+        }
+        .auth-form-panel { padding: clamp(30px, 5vw, 58px); }
+        .auth-kicker {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 16px;
+            color: var(--primary-dark);
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .auth-kicker::before { width: 7px; height: 7px; border-radius: 50%; background: #36a47e; content: ""; }
+        .auth-title { margin: 0 0 9px; font-size: clamp(2rem, 4vw, 2.65rem); line-height: 1.12; letter-spacing: -0.055em; }
+        .auth-description { margin: 0; color: var(--muted); font-size: 0.96rem; }
+        .auth-form { display: grid; gap: 19px; margin-top: 30px; }
+        .auth-field { display: grid; gap: 8px; }
+        .auth-field label { font-size: 0.88rem; }
+        .auth-field input { min-height: 50px; }
+        .auth-submit { width: 100%; min-height: 51px; margin-top: 4px; }
+        .auth-switch { margin: 22px 0 0; color: var(--muted); font-size: 0.9rem; text-align: center; }
+        .auth-switch a { font-weight: 750; }
+        .auth-error { margin: 0; padding: 9px 12px; border-radius: 9px; background: #fff0f0; color: #8a3030; font-size: 0.84rem; }
+        .auth-aside {
+            position: relative;
+            min-height: 100%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 42px;
+            background:
+                radial-gradient(circle at 90% 12%, rgba(98, 187, 144, 0.34), transparent 35%),
+                linear-gradient(145deg, #174e40, #10372f);
+            color: #fff;
+        }
+        .auth-aside::before, .auth-aside::after {
+            position: absolute;
+            border: 1px solid rgba(255, 255, 255, 0.11);
+            border-radius: 50%;
+            content: "";
+            pointer-events: none;
+        }
+        .auth-aside::before { width: 320px; height: 320px; right: -175px; top: 30%; }
+        .auth-aside::after { width: 220px; height: 220px; right: -125px; top: 39%; }
+        .auth-aside-content, .auth-aside-bottom { position: relative; z-index: 1; }
+        .auth-aside-icon {
+            width: 58px;
+            height: 58px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 28px;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #d7f4e4;
+        }
+        .auth-aside-icon svg { width: 30px; height: 30px; }
+        .auth-aside h2 { max-width: 330px; margin: 0; font-size: clamp(1.7rem, 3vw, 2.35rem); letter-spacing: -0.05em; line-height: 1.16; }
+        .auth-aside p { max-width: 350px; margin: 14px 0 0; color: rgba(255, 255, 255, 0.73); font-size: 0.95rem; line-height: 1.75; }
+        .auth-aside-bottom { margin-top: 48px; padding-top: 18px; border-top: 1px solid rgba(255, 255, 255, 0.18); color: rgba(255, 255, 255, 0.72); font-size: 0.83rem; }
+        .site-footer {
+            margin-top: auto;
+            background: #123b32;
+            color: rgba(255, 255, 255, 0.76);
+        }
+        .footer-inner {
+            width: min(1160px, calc(100% - 48px));
+            margin: 0 auto;
+            padding: 52px 0 22px;
+            display: grid;
+            grid-template-columns: minmax(240px, 1.5fr) repeat(2, minmax(150px, 0.7fr));
+            gap: 44px;
+        }
+        .footer-brand { display: inline-flex; align-items: center; gap: 10px; color: #fff; font-weight: 800; letter-spacing: -0.03em; }
+        .footer-brand .brand-mark { width: 34px; height: 34px; border-radius: 11px; }
+        .footer-brand .brand-mark svg { width: 20px; height: 20px; }
+        .footer-copy { max-width: 390px; margin: 14px 0 0; color: rgba(255, 255, 255, 0.68); font-size: 0.9rem; line-height: 1.75; }
+        .footer-heading { margin: 3px 0 14px; color: #fff; font-size: 0.82rem; font-weight: 750; letter-spacing: 0.08em; text-transform: uppercase; }
+        .footer-links { display: grid; justify-items: start; gap: 9px; }
+        .footer-links a { color: rgba(255, 255, 255, 0.72); font-size: 0.9rem; transition: color 160ms ease; }
+        .footer-links a:hover { color: #fff; }
+        .footer-bottom {
+            width: min(1160px, calc(100% - 48px));
+            margin: 0 auto;
+            padding: 17px 0 20px;
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.58);
+            font-size: 0.82rem;
+        }
+        @media (max-width: 900px) {
+            .header-inner { width: min(100% - 36px, 760px); min-height: 74px; flex-wrap: wrap; gap: 10px; padding: 14px 0; }
             .nav-links { width: 100%; justify-content: flex-start; }
-            .button, .nav-links a { width: 100%; justify-content: center; }
+            .nav-links a { padding: 8px 10px; }
+            .nav-links a.cta { margin-left: 0; }
+            .page { width: min(100% - 36px, 760px); margin: 32px auto 48px; }
+            .footer-inner { grid-template-columns: minmax(220px, 1.3fr) repeat(2, minmax(120px, 0.7fr)); gap: 28px; }
+        }
+        @media (max-width: 560px) {
+            .header-inner, .page, .footer-inner, .footer-bottom { width: calc(100% - 32px); }
+            .nav-links { gap: 6px; }
+            .nav-links a { padding: 8px; font-size: 0.83rem; }
+            .nav-links a.cta { padding: 9px 12px; }
+            .page { margin: 24px auto 38px; }
+            .auth-page { width: calc(100% - 32px); margin: 26px auto 38px; }
+            .auth-card { grid-template-columns: 1fr; border-radius: 20px; }
+            .auth-form-panel { padding: 28px 23px 30px; }
+            .auth-aside { min-height: 220px; padding: 26px 24px; }
+            .auth-aside-icon { width: 46px; height: 46px; margin-bottom: 18px; border-radius: 14px; }
+            .auth-aside-icon svg { width: 24px; height: 24px; }
+            .auth-aside h2 { font-size: 1.55rem; }
+            .auth-aside p { margin-top: 9px; font-size: 0.88rem; }
+            .auth-aside-bottom { margin-top: 22px; padding-top: 12px; }
+            .card { padding: 22px; border-radius: 18px; }
+            .button { width: 100%; }
+            .footer-inner, .footer-bottom { width: calc(100% - 32px); }
+            .footer-inner { grid-template-columns: 1fr 1fr; gap: 30px 20px; padding: 36px 0 28px; }
+            .footer-about { grid-column: 1 / -1; }
+            .footer-bottom { flex-direction: column; gap: 5px; padding: 15px 0 18px; }
+        }
+        @media (max-width: 380px) {
+            .footer-inner { grid-template-columns: 1fr; gap: 24px; }
+            .footer-about { grid-column: auto; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            html { scroll-behavior: auto; }
+            *, *::before, *::after { transition-duration: 0.01ms !important; }
         }
     </style>
+    {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body class="{% block body_class %}{% endblock %}">
 <div class="app-shell">
     <header class="site-header">
-        <div class="brand">Rural Telemedicine</div>
-        <div class="nav-links">
-            {% if request.user.is_authenticated %}
-                <a href="{% url 'dashboard' %}">Dashboard</a>
-                <a href="{% url 'patients' %}">Patients</a>
-                <a href="{% url 'consultations' %}">Consultations</a>
-                <a href="{% url 'prescriptions' %}">Prescriptions</a>
-                <a href="{% url 'followups' %}">Follow-ups</a>
-                <a href="{% url 'medical_records' %}">Records</a>
-                <a class="cta" href="{% url 'logout' %}">Logout</a>
-            {% else %}
-                <a href="{% url 'landing' %}">Home</a>
-                <a href="{% url 'login' %}">Login</a>
-                <a class="cta" href="{% url 'signup' %}">Get Started</a>
-            {% endif %}
+        <div class="header-inner">
+            <a class="brand" href="{% if request.user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'landing' %}{% endif %}" aria-label="HealthBridge home">
+                <span class="brand-mark" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M3 12h4l2.2-5 4.1 10 2.1-5H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                <span>HealthBridge</span>
+            </a>
+            <nav class="nav-links" aria-label="Main navigation">
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'dashboard' %}">Dashboard</a>
+                    <a href="{% url 'patients' %}">Patients</a>
+                    <a href="{% url 'consultations' %}">Consultations</a>
+                    <a href="{% url 'prescriptions' %}">Prescriptions</a>
+                    <a href="{% url 'followups' %}">Follow-ups</a>
+                    <a href="{% url 'medical_records' %}">Records</a>
+                    <a class="cta" href="{% url 'logout' %}">Log out</a>
+                {% else %}
+                    <a href="{% url 'landing' %}">Home</a>
+                    <a href="{% url 'landing' %}#how-it-works">How it works</a>
+                    <a href="{% url 'login' %}">Log in</a>
+                    <a class="cta" href="{% url 'signup' %}">Get started</a>
+                {% endif %}
+            </nav>
         </div>
     </header>
     <main class="page">
         {% if messages %}
-            <div class="message-list">
+            <div class="message-list" role="status">
                 {% for message in messages %}
                     <div class="message {{ message.tags }}">{{ message }}</div>
                 {% endfor %}
@@ -85,7 +330,50 @@
         {% endif %}
         {% block content %}{% endblock %}
     </main>
-    <footer class="footer">Rural Telemedicine Platform - Patient registration, video consultation, prescriptions, follow-up, and records.</footer>
+    <footer class="site-footer">
+        <div class="footer-inner">
+            <div class="footer-about">
+                <a class="footer-brand" href="{% if request.user.is_authenticated %}{% url 'dashboard' %}{% else %}{% url 'landing' %}{% endif %}">
+                    <span class="brand-mark" aria-hidden="true">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2.2-5 4.1 10 2.1-5H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                    HealthBridge
+                </a>
+                <p class="footer-copy">Bringing patients, care teams, and essential health information closer together.</p>
+            </div>
+            <div>
+                <h2 class="footer-heading">Explore</h2>
+                <nav class="footer-links" aria-label="Footer navigation">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}">Dashboard</a>
+                        <a href="{% url 'patients' %}">Patients</a>
+                        <a href="{% url 'consultations' %}">Consultations</a>
+                    {% else %}
+                        <a href="{% url 'landing' %}">Home</a>
+                        <a href="{% url 'landing' %}#how-it-works">How it works</a>
+                        <a href="{% url 'signup' %}">Create an account</a>
+                    {% endif %}
+                </nav>
+            </div>
+            <div>
+                <h2 class="footer-heading">Your workspace</h2>
+                <nav class="footer-links" aria-label="Workspace links">
+                    {% if request.user.is_authenticated %}
+                        <a href="{% url 'prescriptions' %}">Prescriptions</a>
+                        <a href="{% url 'followups' %}">Follow-ups</a>
+                        <a href="{% url 'medical_records' %}">Medical records</a>
+                    {% else %}
+                        <a href="{% url 'login' %}">Log in</a>
+                        <a href="{% url 'signup' %}">Get started</a>
+                    {% endif %}
+                </nav>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <span>&copy; {% now "Y" %} HealthBridge. All rights reserved.</span>
+            <span>Thoughtful care, connected.</span>
+        </div>
+    </footer>
 </div>
 </body>
 </html>

@@ -1,40 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} | Rural Telemedicine Platform</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #eef4fb; margin: 0; color: #1c2030; }
-        .page { max-width: 640px; margin: 44px auto; padding: 30px; background: white; border-radius: 14px; box-shadow: 0 18px 36px rgba(0,0,0,0.07); }
-        h1 { margin-top: 0; }
-        .form-field { margin-bottom: 16px; }
-        label { display: block; margin-bottom: 6px; font-weight: 600; }
-        .form-input, .form-select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccd7eb; }
-        .submit-button { width: 100%; padding: 14px; background: #2f6bed; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; }
-        .message { margin-bottom: 16px; padding: 12px; border-radius: 10px; background: #e9f2ff; }
-    </style>
-</head>
-<body>
-    <main class="page">
-        <h1>{{ title }}</h1>
-        {% for message in messages %}
-            <div class="message">{{ message }}</div>
-        {% endfor %}
+{% extends "registration/base.html" %}
+{% block title %}Upload a prescription | HealthBridge{% endblock %}
+{% block body_class %}prescription-form-body{% endblock %}
+{% block extra_head %}
+<style>
+    .prescription-form-body .page { width: min(1080px, calc(100% - 48px)); margin-top: 38px; }
+    .prescription-form-layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .72fr); gap: 22px; align-items: start; }
+    .prescription-form-panel, .prescription-info-panel { border: 1px solid var(--border); border-radius: 22px; background: #fff; box-shadow: 0 14px 40px rgba(24, 66, 54, .06); }
+    .prescription-form-panel { padding: clamp(24px, 4vw, 42px); }
+    .prescription-form-heading { margin-bottom: 28px; }
+    .prescription-kicker { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 13px; color: var(--primary-dark); font-size: .76rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .prescription-kicker::before { width: 7px; height: 7px; border-radius: 50%; background: #36a47e; content: ""; }
+    .prescription-form-heading h1 { margin: 0; font-size: clamp(1.9rem, 4vw, 2.5rem); letter-spacing: -.055em; line-height: 1.12; }
+    .prescription-form-heading p { max-width: 580px; margin: 10px 0 0; color: var(--muted); }
+    .prescription-fields { display: grid; gap: 21px; }
+    .prescription-field { display: grid; align-content: start; gap: 8px; }
+    .prescription-field label { color: #344f46; font-size: .88rem; font-weight: 700; }
+    .prescription-required { color: var(--primary); }
+    .prescription-field select, .prescription-field input { min-height: 50px; }
+    .prescription-field textarea { min-height: 132px; }
+    .prescription-field input::placeholder, .prescription-field textarea::placeholder { color: #9aa9a2; }
+    .prescription-field input[type="file"] { padding: 11px 13px; background: #fbfdfb; }
+    .prescription-help { color: #819089; font-size: .78rem; line-height: 1.5; }
+    .prescription-field-error { margin: 0; color: #a33e3e; font-size: .81rem; }
+    .prescription-field-error + select, .prescription-field-error + input, .prescription-field-error + textarea { border-color: #d99191; }
+    .prescription-form-error { margin-bottom: 20px; }
+    .prescription-form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; padding-top: 22px; border-top: 1px solid #edf2ef; }
+    .prescription-form-actions .button { min-width: 165px; }
+    .prescription-info-panel { overflow: hidden; }
+    .prescription-info-top { padding: 26px; background: linear-gradient(145deg, #174e40, #10372f); color: #fff; }
+    .prescription-info-icon { width: 46px; height: 46px; display: grid; place-items: center; margin-bottom: 19px; border: 1px solid rgba(255,255,255,.2); border-radius: 14px; background: rgba(255,255,255,.1); color: #d7f4e4; }
+    .prescription-info-icon svg { width: 23px; height: 23px; }
+    .prescription-info-top h2 { margin: 0; font-size: 1.22rem; letter-spacing: -.035em; }
+    .prescription-info-top p { margin: 8px 0 0; color: rgba(255,255,255,.73); font-size: .88rem; line-height: 1.65; }
+    .prescription-info-list { display: grid; gap: 17px; padding: 23px 25px 25px; }
+    .prescription-info-item { display: flex; align-items: flex-start; gap: 12px; }
+    .prescription-check { width: 23px; height: 23px; flex: 0 0 auto; display: grid; place-items: center; margin-top: 1px; border-radius: 50%; background: var(--primary-pale); color: var(--primary-dark); font-size: .8rem; font-weight: 800; }
+    .prescription-info-item strong, .prescription-info-item span { display: block; }
+    .prescription-info-item strong { font-size: .84rem; }
+    .prescription-info-item span { margin-top: 3px; color: var(--muted); font-size: .78rem; line-height: 1.5; }
+    .prescription-privacy { margin: 0 25px 24px; padding: 12px 13px; border: 1px solid #e6efea; border-radius: 12px; background: #f8fbf9; color: #687b72; font-size: .76rem; line-height: 1.55; }
+    @media (max-width: 800px) {
+        .prescription-form-body .page { width: min(100% - 36px, 680px); margin-top: 30px; }
+        .prescription-form-layout { grid-template-columns: 1fr; }
+        .prescription-info-panel { display: grid; grid-template-columns: 1fr 1fr; }
+        .prescription-info-top { grid-row: span 2; }
+        .prescription-info-list { padding: 22px; }
+        .prescription-privacy { margin: 0 22px 22px; }
+    }
+    @media (max-width: 560px) {
+        .prescription-form-body .page { width: calc(100% - 32px); margin-top: 23px; }
+        .prescription-form-panel { padding: 24px 20px; border-radius: 18px; }
+        .prescription-form-heading { margin-bottom: 23px; }
+        .prescription-form-actions { flex-direction: column; }
+        .prescription-form-actions .button { width: 100%; }
+        .prescription-info-panel { display: block; border-radius: 18px; }
+        .prescription-info-top { padding: 23px; }
+        .prescription-info-list { padding: 21px 23px; }
+        .prescription-privacy { margin: 0 23px 22px; }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<section class="prescription-form-layout" aria-labelledby="prescription-form-title">
+    <div class="prescription-form-panel">
+        <header class="prescription-form-heading">
+            <div class="prescription-kicker">Patient care</div>
+            <h1 id="prescription-form-title">{{ title|default:"Upload a prescription" }}</h1>
+            <p>Save prescription details and attach a document to the right patient.</p>
+        </header>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {% for field in form %}
-                <div class="form-field">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.errors %}
-                        <div class="message">{{ field.errors|first }}</div>
-                    {% endif %}
-                </div>
-            {% endfor %}
-            <button class="submit-button" type="submit">Save Prescription</button>
+            {% if form.non_field_errors %}
+                <div class="message error prescription-form-error" role="alert">{{ form.non_field_errors|first }}</div>
+            {% endif %}
+            <div class="prescription-fields">
+                {% for field in form %}
+                    <div class="prescription-field {{ field.name }}">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}<span class="prescription-required" aria-label="required">*</span>{% endif %}
+                        </label>
+                        {% if field.errors %}<p class="prescription-field-error" id="{{ field.id_for_label }}-error" role="alert">{{ field.errors|first }}</p>{% endif %}
+                        {{ field }}
+                        {% if field.name == "description" %}<span class="prescription-help">Optional — add dosage instructions or other useful context.</span>{% endif %}
+                        {% if field.name == "uploaded_file" %}<span class="prescription-help">Optional — attach a prescription document from your device.</span>{% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="prescription-form-actions">
+                <button class="button" type="submit">
+                    Save prescription
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <a class="button secondary" href="{% url 'prescriptions' %}">Cancel</a>
+            </div>
         </form>
-        <p><a href="{% url 'prescriptions' %}">Back to Prescriptions</a></p>
-    </main>
-</body>
-</html>
+    </div>
+    <aside class="prescription-info-panel" aria-label="Prescription upload information">
+        <div class="prescription-info-top">
+            <div class="prescription-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v6h5m-9 4h5m-5 4h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>Keep treatment details close at hand.</h2>
+            <p>Connect prescription information to a patient and make it easier to find in their care workflow.</p>
+        </div>
+        <div class="prescription-info-list">
+            <div class="prescription-info-item">
+                <span class="prescription-check" aria-hidden="true">✓</span>
+                <span><strong>Choose the right patient</strong><span>Only patients in your workspace appear in the list.</span></span>
+            </div>
+            <div class="prescription-info-item">
+                <span class="prescription-check" aria-hidden="true">✓</span>
+                <span><strong>Add a useful title</strong><span>Use a clear name to recognize the prescription later.</span></span>
+            </div>
+            <div class="prescription-info-item">
+                <span class="prescription-check" aria-hidden="true">✓</span>
+                <span><strong>Attach a document if available</strong><span>You can save the details without an uploaded file.</span></span>
+            </div>
+        </div>
+        <p class="prescription-privacy">Prescription details are saved with the selected patient's care information.</p>
+    </aside>
+</section>
+{% endblock %}

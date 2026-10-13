@@ -1,33 +1,49 @@
 {% extends "registration/base.html" %}
-{% block title %}Sign Up | Rural Telemedicine{% endblock %}
+{% block title %}Create your account | HealthBridge{% endblock %}
 {% block content %}
-<div class="card">
-    <h1 class="page-title">Sign Up</h1>
-    <p class="page-subtitle">Register with your email and create a secure account for village telemedicine.</p>
-    <form method="post" class="grid" style="gap: 18px; margin-top: 24px;">
-        {% csrf_token %}
-        {% if form.non_field_errors %}
-            <div class="message error">{{ form.non_field_errors|first }}</div>
-        {% endif %}
-        <div class="form-row">
-            {{ form.email.label_tag }}
-            {{ form.email }}
-            {% if form.email.errors %}<div class="message error">{{ form.email.errors|first }}</div>{% endif %}
+<section class="auth-page" aria-labelledby="signup-title">
+    <div class="auth-card">
+        <div class="auth-form-panel">
+            <div class="auth-kicker">Get started</div>
+            <h1 class="auth-title" id="signup-title">Create your account.</h1>
+            <p class="auth-description">Set up your HealthBridge workspace and bring your care workflow together.</p>
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="auth-error" role="alert">{{ form.non_field_errors|first }}</div>
+                {% endif %}
+                <div class="auth-field">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                    {% if form.email.errors %}<div class="auth-error" role="alert">{{ form.email.errors|first }}</div>{% endif %}
+                </div>
+                <div class="auth-field">
+                    {{ form.password1.label_tag }}
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}<div class="auth-error" role="alert">{{ form.password1.errors|first }}</div>{% endif %}
+                </div>
+                <div class="auth-field">
+                    {{ form.password2.label_tag }}
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}<div class="auth-error" role="alert">{{ form.password2.errors|first }}</div>{% endif %}
+                </div>
+                <button class="button auth-submit" type="submit">
+                    Create account
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+            </form>
+            <p class="auth-switch">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
         </div>
-        <div class="form-row">
-            {{ form.password1.label_tag }}
-            {{ form.password1 }}
-            {% if form.password1.errors %}<div class="message error">{{ form.password1.errors|first }}</div>{% endif %}
-        </div>
-        <div class="form-row">
-            {{ form.password2.label_tag }}
-            {{ form.password2 }}
-            {% if form.password2.errors %}<div class="message error">{{ form.password2.errors|first }}</div>{% endif %}
-        </div>
-        <div class="form-actions">
-            <button class="button" type="submit">Create Account</button>
-            <a class="button secondary" href="{% url 'login' %}">Already have an account?</a>
-        </div>
-    </form>
-</div>
+        <aside class="auth-aside">
+            <div class="auth-aside-content">
+                <div class="auth-aside-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20m6-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-5v6m-3-3h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+                <h2>Make space for what matters most.</h2>
+                <p>Bring patient details and everyday care coordination into a workspace designed to feel clear and easy to use.</p>
+            </div>
+            <div class="auth-aside-bottom">A more connected way to care.</div>
+        </aside>
+    </div>
+</section>
 {% endblock %}

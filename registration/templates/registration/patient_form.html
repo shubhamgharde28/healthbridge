@@ -1,22 +1,125 @@
 {% extends "registration/base.html" %}
-{% block title %}Register Patient | Rural Telemedicine{% endblock %}
+{% block title %}Register a patient | HealthBridge{% endblock %}
+{% block body_class %}patient-register-body{% endblock %}
+{% block extra_head %}
+<style>
+    .patient-register-body .page { width: min(1080px, calc(100% - 48px)); margin-top: 38px; }
+    .patient-register { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.72fr); gap: 22px; align-items: start; }
+    .patient-form-panel, .patient-info-panel {
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        background: #fff;
+        box-shadow: 0 14px 40px rgba(24, 66, 54, 0.06);
+    }
+    .patient-form-panel { padding: clamp(24px, 4vw, 42px); }
+    .patient-form-heading { margin-bottom: 28px; }
+    .patient-kicker { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 13px; color: var(--primary-dark); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+    .patient-kicker::before { width: 7px; height: 7px; border-radius: 50%; background: #36a47e; content: ""; }
+    .patient-form-heading h1 { margin: 0; font-size: clamp(1.9rem, 4vw, 2.5rem); letter-spacing: -0.055em; line-height: 1.12; }
+    .patient-form-heading p { max-width: 580px; margin: 10px 0 0; color: var(--muted); }
+    .patient-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 21px 17px; }
+    .patient-field { display: grid; align-content: start; gap: 8px; }
+    .patient-field.name, .patient-field.phone, .patient-form-error { grid-column: 1 / -1; }
+    .patient-field label { color: #344f46; font-size: 0.88rem; font-weight: 700; }
+    .required-mark { color: var(--primary); }
+    .patient-field input { min-height: 50px; }
+    .patient-field input::placeholder { color: #9aa9a2; }
+    .patient-help { color: #819089; font-size: 0.78rem; }
+    .patient-field-error { margin: 0; color: #a33e3e; font-size: 0.81rem; }
+    .patient-field-error + input { border-color: #d99191; }
+    .patient-form-error { margin-bottom: 20px; }
+    .patient-form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; padding-top: 22px; border-top: 1px solid #edf2ef; }
+    .patient-form-actions .button { min-width: 155px; }
+    .patient-info-panel { overflow: hidden; }
+    .patient-info-top { padding: 26px; background: linear-gradient(145deg, #174e40, #10372f); color: #fff; }
+    .patient-info-icon { width: 46px; height: 46px; display: grid; place-items: center; margin-bottom: 19px; border: 1px solid rgba(255,255,255,.2); border-radius: 14px; background: rgba(255,255,255,.1); color: #d7f4e4; }
+    .patient-info-icon svg { width: 23px; height: 23px; }
+    .patient-info-top h2 { margin: 0; font-size: 1.22rem; letter-spacing: -0.035em; }
+    .patient-info-top p { margin: 8px 0 0; color: rgba(255,255,255,.73); font-size: 0.88rem; line-height: 1.65; }
+    .patient-info-list { display: grid; gap: 17px; padding: 23px 25px 25px; }
+    .patient-info-item { display: flex; align-items: flex-start; gap: 12px; }
+    .patient-check { width: 23px; height: 23px; flex: 0 0 auto; display: grid; place-items: center; margin-top: 1px; border-radius: 50%; background: var(--primary-pale); color: var(--primary-dark); font-size: 0.8rem; font-weight: 800; }
+    .patient-info-item strong, .patient-info-item span { display: block; }
+    .patient-info-item strong { font-size: 0.84rem; }
+    .patient-info-item span { margin-top: 3px; color: var(--muted); font-size: 0.78rem; line-height: 1.5; }
+    .patient-privacy { margin: 0 25px 24px; padding: 12px 13px; border: 1px solid #e6efea; border-radius: 12px; background: #f8fbf9; color: #687b72; font-size: 0.76rem; line-height: 1.55; }
+    @media (max-width: 800px) {
+        .patient-register-body .page { width: min(100% - 36px, 680px); margin-top: 30px; }
+        .patient-register { grid-template-columns: 1fr; }
+        .patient-info-panel { display: grid; grid-template-columns: 1fr 1fr; }
+        .patient-info-top { grid-row: span 2; }
+        .patient-info-list { padding: 22px; }
+        .patient-privacy { margin: 0 22px 22px; }
+    }
+    @media (max-width: 560px) {
+        .patient-register-body .page { width: calc(100% - 32px); margin-top: 23px; }
+        .patient-form-panel { padding: 24px 20px; border-radius: 18px; }
+        .patient-form-heading { margin-bottom: 23px; }
+        .patient-fields { grid-template-columns: 1fr; gap: 18px; }
+        .patient-field.name, .patient-field.phone, .patient-form-error { grid-column: auto; }
+        .patient-form-actions { flex-direction: column; }
+        .patient-form-actions .button { width: 100%; }
+        .patient-info-panel { display: block; border-radius: 18px; }
+        .patient-info-top { padding: 23px; }
+        .patient-info-list { padding: 21px 23px; }
+        .patient-privacy { margin: 0 23px 22px; }
+    }
+</style>
+{% endblock %}
 {% block content %}
-<div class="card">
-    <h1 class="page-title">{{ title }}</h1>
-    <p class="page-subtitle">Enter patient details for rural telemedicine outreach.</p>
-    <form method="post" class="grid" style="gap: 18px; margin-top: 24px;">
-        {% csrf_token %}
-        {% for field in form %}
-            <div class="form-row">
-                {{ field.label_tag }}
-                {{ field }}
-                {% if field.errors %}<div class="message error">{{ field.errors|first }}</div>{% endif %}
+<section class="patient-register" aria-labelledby="patient-form-title">
+    <div class="patient-form-panel">
+        <header class="patient-form-heading">
+            <div class="patient-kicker">Patient details</div>
+            <h1 id="patient-form-title">{{ title|default:"Register a patient" }}</h1>
+            <p>Add the basic information needed to create a patient profile and keep their care organized.</p>
+        </header>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="message error patient-form-error" role="alert">{{ form.non_field_errors|first }}</div>
+            {% endif %}
+            <div class="patient-fields">
+                {% for field in form %}
+                    <div class="patient-field {{ field.name }}">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}<span class="required-mark" aria-label="required">*</span>{% endif %}
+                        </label>
+                        {% if field.errors %}<p class="patient-field-error" id="{{ field.id_for_label }}-error" role="alert">{{ field.errors|first }}</p>{% endif %}
+                        {{ field }}
+                        {% if field.name == "phone" %}<span class="patient-help">Optional — add a number if the patient has one.</span>{% endif %}
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
-        <div class="form-actions">
-            <button class="button" type="submit">Save Patient</button>
-            <a class="button secondary" href="{% url 'patients' %}">Back to Patients</a>
+            <div class="patient-form-actions">
+                <button class="button" type="submit">
+                    Save patient
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <a class="button secondary" href="{% url 'patients' %}">Cancel</a>
+            </div>
+        </form>
+    </div>
+    <aside class="patient-info-panel" aria-label="Patient registration information">
+        <div class="patient-info-top">
+            <div class="patient-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20m6-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-5v6m-3-3h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <h2>A clear start to better-connected care.</h2>
+            <p>Once registered, you can schedule consultations and keep records and follow-ups together.</p>
         </div>
-    </form>
-</div>
+        <div class="patient-info-list">
+            <div class="patient-info-item">
+                <span class="patient-check" aria-hidden="true">✓</span>
+                <span><strong>Start with the essentials</strong><span>Name, age, and village are required to create the profile.</span></span>
+            </div>
+            <div class="patient-info-item">
+                <span class="patient-check" aria-hidden="true">✓</span>
+                <span><strong>Add contact details if available</strong><span>A phone number is optional and can help your team stay connected.</span></span>
+            </div>
+        </div>
+        <p class="patient-privacy">Patient details are saved to your workspace so you can find them when coordinating care.</p>
+    </aside>
+</section>
 {% endblock %}

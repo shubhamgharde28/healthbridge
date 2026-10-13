@@ -1,26 +1,287 @@
 {% extends "registration/base.html" %}
-{% block title %}Rural Telemedicine Platform{% endblock %}
+{% block title %}HealthBridge | Care, connected{% endblock %}
+{% block body_class %}landing-body{% endblock %}
+{% block extra_head %}
+<style>
+    .landing-body .page { width: min(1240px, calc(100% - 48px)); margin-top: 32px; }
+    .landing-page { overflow: hidden; }
+    .hero {
+        position: relative;
+        min-height: 530px;
+        display: grid;
+        grid-template-columns: 1.02fr 0.98fr;
+        align-items: center;
+        gap: 46px;
+        padding: 66px 6.2%;
+        border: 1px solid #deebe4;
+        border-radius: 28px;
+        background:
+            radial-gradient(ellipse at 85% 9%, rgba(203, 237, 219, 0.62), transparent 36%),
+            linear-gradient(125deg, #fff 15%, #f4faf6 100%);
+        box-shadow: 0 22px 65px rgba(24, 66, 54, 0.07);
+    }
+    .hero-copy { position: relative; z-index: 1; }
+    .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 21px;
+        color: var(--primary-dark);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.105em;
+        text-transform: uppercase;
+    }
+    .eyebrow-dot { width: 8px; height: 8px; border-radius: 50%; background: #36a47e; box-shadow: 0 0 0 5px #e4f4ed; }
+    .hero h1 {
+        max-width: 610px;
+        margin: 0;
+        color: var(--ink);
+        font-size: clamp(2.7rem, 5.5vw, 4.7rem);
+        font-weight: 780;
+        letter-spacing: -0.067em;
+        line-height: 1.03;
+    }
+    .hero h1 span { color: var(--primary); }
+    .hero-copy > p { max-width: 530px; margin: 22px 0 0; color: var(--muted); font-size: 1.08rem; line-height: 1.8; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+    .hero-actions .button { min-height: 52px; padding: 14px 22px; }
+    .hero-caption { display: flex; align-items: center; gap: 10px; margin-top: 24px; color: #657970; font-size: 0.87rem; }
+    .hero-caption svg { width: 19px; height: 19px; flex: 0 0 auto; color: var(--primary); }
+    .hero-art { position: relative; min-height: 372px; display: grid; place-items: center; }
+    .art-orb { position: absolute; width: min(340px, 75%); aspect-ratio: 1; border-radius: 50%; background: linear-gradient(145deg, #dff3e7, #bde4d0); }
+    .art-orb::before, .art-orb::after { position: absolute; border: 1px solid rgba(22, 131, 106, 0.14); border-radius: 50%; content: ""; }
+    .art-orb::before { inset: -22px; }
+    .art-orb::after { inset: -43px; }
+    .care-card {
+        position: relative;
+        z-index: 1;
+        width: min(350px, 88%);
+        padding: 23px;
+        border: 1px solid rgba(255, 255, 255, 0.86);
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.94);
+        box-shadow: 0 22px 55px rgba(35, 84, 66, 0.16);
+        transform: rotate(-2deg);
+    }
+    .care-card-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .care-card-label { color: #75877f; font-size: 0.76rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+    .care-status { display: inline-flex; align-items: center; gap: 6px; padding: 6px 9px; border-radius: 999px; background: #e9f7ee; color: #35734f; font-size: 0.7rem; font-weight: 750; }
+    .care-status span { width: 6px; height: 6px; border-radius: 50%; background: #42a66b; }
+    .care-card h2 { margin: 18px 0 3px; font-size: 1.38rem; letter-spacing: -0.04em; }
+    .care-card-subtitle { margin: 0; color: var(--muted); font-size: 0.86rem; }
+    .care-divider { height: 1px; margin: 18px 0; background: #e8efeb; }
+    .care-row { display: flex; align-items: center; gap: 12px; margin-top: 13px; }
+    .care-icon { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 12px; background: var(--primary-pale); color: var(--primary-dark); }
+    .care-icon svg { width: 20px; height: 20px; }
+    .care-row strong, .care-row small { display: block; }
+    .care-row strong { font-size: 0.84rem; }
+    .care-row small { margin-top: 2px; color: #76867f; font-size: 0.75rem; }
+    .art-float {
+        position: absolute;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 15px;
+        border: 1px solid #e2ece6;
+        border-radius: 15px;
+        background: #fff;
+        box-shadow: 0 12px 28px rgba(35, 84, 66, 0.12);
+        color: #38574b;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+    .art-float svg { width: 21px; height: 21px; color: var(--primary); }
+    .art-float.one { top: 28px; right: -3px; }
+    .art-float.two { bottom: 24px; left: -5px; }
+    .section { padding: 90px 4.5% 12px; }
+    .section-heading { max-width: 650px; margin: 0 auto 38px; text-align: center; }
+    .section-heading .eyebrow { margin-bottom: 12px; }
+    .section-heading h2 { margin: 0; font-size: clamp(1.85rem, 3.4vw, 2.7rem); letter-spacing: -0.055em; line-height: 1.15; }
+    .section-heading p { margin: 13px 0 0; color: var(--muted); }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 17px; }
+    .feature-card {
+        padding: 25px 24px 27px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: #fff;
+        transition: transform 170ms ease, box-shadow 170ms ease, border-color 170ms ease;
+    }
+    .feature-card:hover { transform: translateY(-3px); border-color: #c1dace; box-shadow: 0 14px 30px rgba(24, 66, 54, 0.07); }
+    .feature-icon { width: 48px; height: 48px; display: grid; place-items: center; border-radius: 15px; background: var(--primary-pale); color: var(--primary-dark); }
+    .feature-icon svg { width: 23px; height: 23px; }
+    .feature-card h3 { margin: 17px 0 7px; font-size: 1.05rem; letter-spacing: -0.02em; }
+    .feature-card p { margin: 0; color: var(--muted); font-size: 0.91rem; line-height: 1.7; }
+    .how-section { padding-top: 82px; padding-bottom: 76px; }
+    .steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+    .step { position: relative; padding: 4px 10px; text-align: center; }
+    .step-number { width: 44px; height: 44px; display: grid; place-items: center; margin: 0 auto 17px; border: 1px solid #cce3d7; border-radius: 50%; background: #fff; color: var(--primary-dark); font-weight: 800; }
+    .step h3 { margin: 0 0 7px; font-size: 1.03rem; }
+    .step p { max-width: 290px; margin: 0 auto; color: var(--muted); font-size: 0.9rem; }
+    .closing-cta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 25px;
+        padding: 34px 38px;
+        border-radius: 20px;
+        background: #eaf5ef;
+    }
+    .closing-cta h2 { margin: 0; font-size: clamp(1.4rem, 3vw, 2rem); letter-spacing: -0.045em; }
+    .closing-cta p { margin: 5px 0 0; color: var(--muted); }
+    .closing-cta .button { flex: 0 0 auto; }
+    @media (max-width: 900px) {
+        .landing-body .page { width: min(100% - 36px, 760px); margin-top: 28px; }
+        .hero { grid-template-columns: 1fr 0.86fr; gap: 20px; min-height: 470px; padding: 48px 5%; }
+        .hero h1 { font-size: clamp(2.55rem, 6vw, 3.8rem); }
+        .hero-art { min-height: 330px; }
+        .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .section { padding-top: 70px; }
+    }
+    @media (max-width: 640px) {
+        .landing-body .page { width: calc(100% - 32px); margin-top: 22px; }
+        .hero { grid-template-columns: 1fr; gap: 22px; padding: 38px 25px 30px; border-radius: 22px; }
+        .hero h1 { max-width: 500px; font-size: clamp(2.65rem, 12vw, 3.7rem); }
+        .hero-copy > p { font-size: 1rem; }
+        .hero-art { min-height: 350px; }
+        .art-float.one { right: -2px; }
+        .art-float.two { left: -2px; }
+        .section { padding: 65px 0 5px; }
+        .section-heading { margin-bottom: 28px; }
+        .feature-grid, .steps { grid-template-columns: 1fr; }
+        .feature-card { padding: 22px; }
+        .how-section { padding-top: 65px; padding-bottom: 58px; }
+        .steps { gap: 27px; }
+        .closing-cta { align-items: flex-start; flex-direction: column; padding: 27px 24px; }
+        .closing-cta .button { width: 100%; }
+    }
+</style>
+{% endblock %}
 {% block content %}
-<div class="card">
-    <div class="grid" style="grid-template-columns: 1.25fr 0.9fr; align-items: center; gap: 28px;">
-        <div>
-            <h1 class="page-title">Rural Telemedicine for Villages</h1>
-            <p class="page-subtitle">Villages me doctors available nahi hote. Enable remote patient registration, consultation links, prescription uploads, follow-up scheduling, and secure medical records.</p>
-            <div class="actions">
-                <a class="button" href="{% url 'signup' %}">Create Account</a>
-                <a class="button secondary" href="{% url 'login' %}">Sign In</a>
+<div class="landing-page">
+    <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+            <div class="eyebrow"><span class="eyebrow-dot"></span> Better connected care starts here</div>
+            <h1 id="hero-title">Care that reaches <span>everyone.</span></h1>
+            <p>HealthBridge helps care teams connect with patients, coordinate consultations, and keep essential health information organized — wherever care happens.</p>
+            <div class="hero-actions">
+                <a class="button" href="{% url 'signup' %}">
+                    Get started
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+                <a class="button secondary" href="{% url 'login' %}">Log in to your account</a>
+            </div>
+            <div class="hero-caption">
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3 5 6v5c0 4.4 3 8.3 7 10 4-1.7 7-5.6 7-10V6l-7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                A simpler workspace for the everyday work of care
             </div>
         </div>
-        <div style="padding: 20px; background: var(--surface-strong); border-radius: 18px;">
-            <h2>Platform Features</h2>
-            <ul style="margin: 18px 0 0; padding-left: 20px; color: var(--text);">
-                <li>Patient registration</li>
-                <li>Video consultation links</li>
-                <li>Prescription upload</li>
-                <li>Follow-up scheduling</li>
-                <li>Medical records</li>
-            </ul>
+        <div class="hero-art" aria-hidden="true">
+            <div class="art-orb"></div>
+            <div class="art-float one">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M8 3v3m8-3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v12H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9 14 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                Follow-ups, made easier
+            </div>
+            <div class="care-card">
+                <div class="care-card-top">
+                    <span class="care-card-label">Your care workspace</span>
+                    <span class="care-status"><span></span> Connected</span>
+                </div>
+                <h2>Care, in one place.</h2>
+                <p class="care-card-subtitle">A clear view of the details that matter.</p>
+                <div class="care-divider"></div>
+                <div class="care-row">
+                    <span class="care-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20m6-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm6-5h5m-2.5-2.5v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                    <span><strong>Patient information</strong><small>Keep care details organized</small></span>
+                </div>
+                <div class="care-row">
+                    <span class="care-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3v3m8-3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v12H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span><strong>Consultations &amp; follow-ups</strong><small>Coordinate the next steps</small></span>
+                </div>
+                <div class="care-row">
+                    <span class="care-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v6h5m-9 4h5m-5 4h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span><strong>Records &amp; prescriptions</strong><small>Find important details when needed</small></span>
+                </div>
+            </div>
+            <div class="art-float two">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2.2-5 4.1 10 2.1-5H21" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                More time for meaningful care
+            </div>
         </div>
-    </div>
+    </section>
+
+    <section class="section" aria-labelledby="features-title">
+        <div class="section-heading">
+            <div class="eyebrow"><span class="eyebrow-dot"></span> One connected workspace</div>
+            <h2 id="features-title">The details of care, brought together.</h2>
+            <p>Spend less time switching between tasks and more time focused on the people who count on you.</p>
+        </div>
+        <div class="feature-grid">
+            <article class="feature-card">
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20m6-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-1v6m-3-3h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                <h3>Patient management</h3>
+                <p>Register patients and keep key details easy to find in one organized place.</p>
+            </article>
+            <article class="feature-card">
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3v3m8-3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v12H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 13h3m-3 3h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                <h3>Consultation coordination</h3>
+                <p>Schedule consultations and keep appointment details connected to each patient.</p>
+            </article>
+            <article class="feature-card">
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v6h5m-9 4h5m-5 4h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <h3>Prescriptions &amp; records</h3>
+                <p>Upload prescriptions and medical documents alongside patient information.</p>
+            </article>
+            <article class="feature-card">
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3v3m8-3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v12H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9 14 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <h3>Follow-up planning</h3>
+                <p>Make it easier to keep track of what comes next after a consultation.</p>
+            </article>
+            <article class="feature-card">
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2.2-5 4.1 10 2.1-5H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6"/></svg></span>
+                <h3>Remote care support</h3>
+                <p>Keep consultation links and care information within reach, wherever patients are.</p>
+            </article>
+            <article class="feature-card">
+                <span class="feature-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M6.5 3H20v18H6.5A2.5 2.5 0 0 1 4 18.5v-13A2.5 2.5 0 0 1 6.5 3Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7h8m-8 4h8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                <h3>A clearer daily workflow</h3>
+                <p>Bring everyday administrative tasks together in a straightforward workspace.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="section how-section" id="how-it-works" aria-labelledby="how-title">
+        <div class="section-heading">
+            <div class="eyebrow"><span class="eyebrow-dot"></span> Getting started</div>
+            <h2 id="how-title">A simple path to connected care.</h2>
+            <p>Get your workspace ready in a few clear steps.</p>
+        </div>
+        <div class="steps">
+            <article class="step">
+                <div class="step-number">01</div>
+                <h3>Create your workspace</h3>
+                <p>Set up your account to access your HealthBridge workspace.</p>
+            </article>
+            <article class="step">
+                <div class="step-number">02</div>
+                <h3>Add patient details</h3>
+                <p>Register patients and organize the information your team needs.</p>
+            </article>
+            <article class="step">
+                <div class="step-number">03</div>
+                <h3>Coordinate ongoing care</h3>
+                <p>Manage consultations, prescriptions, records, and follow-ups together.</p>
+            </article>
+        </div>
+    </section>
+
+    <section class="closing-cta" aria-label="Get started with HealthBridge">
+        <div>
+            <h2>Make room for better-connected care.</h2>
+            <p>Start bringing your care workflow together with HealthBridge.</p>
+        </div>
+        <a class="button" href="{% url 'signup' %}">Create your account</a>
+    </section>
 </div>
 {% endblock %}

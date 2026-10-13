@@ -1,62 +1,247 @@
 {% extends "registration/base.html" %}
-{% block title %}Dashboard | Rural Telemedicine{% endblock %}
+{% block title %}Dashboard | HealthBridge{% endblock %}
+{% block body_class %}dashboard-body{% endblock %}
+{% block extra_head %}
+<style>
+    .dashboard-body .page { width: min(1160px, calc(100% - 48px)); margin-top: 38px; }
+    .dashboard { display: grid; gap: 26px; }
+    .dashboard-welcome { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; }
+    .dashboard-date { margin-bottom: 8px; color: var(--primary-dark); font-size: 0.8rem; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase; }
+    .dashboard-welcome h1 { margin: 0; font-size: clamp(2rem, 4vw, 2.8rem); letter-spacing: -0.06em; line-height: 1.1; }
+    .dashboard-welcome p { margin: 9px 0 0; color: var(--muted); }
+    .dashboard-welcome .button { flex: 0 0 auto; }
+    .dashboard-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+    .stat-card {
+        min-height: 145px;
+        padding: 20px;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 8px 24px rgba(24, 66, 54, 0.035);
+    }
+    .stat-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .stat-label { color: var(--muted); font-size: 0.85rem; font-weight: 650; }
+    .stat-icon { width: 39px; height: 39px; display: grid; place-items: center; border-radius: 12px; background: var(--primary-pale); color: var(--primary-dark); }
+    .stat-icon svg { width: 20px; height: 20px; }
+    .stat-value { margin-top: 13px; font-size: 2rem; font-weight: 800; letter-spacing: -0.06em; line-height: 1; }
+    .stat-detail { margin-top: 7px; color: #82918b; font-size: 0.77rem; }
+    .dashboard-columns { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.85fr); gap: 20px; align-items: start; }
+    .dashboard-panel { min-width: 0; padding: 24px; border: 1px solid var(--border); border-radius: 19px; background: #fff; box-shadow: 0 8px 24px rgba(24, 66, 54, 0.035); }
+    .panel-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 20px; }
+    .panel-heading h2 { margin: 0; font-size: 1.12rem; letter-spacing: -0.025em; }
+    .panel-heading p { margin: 5px 0 0; color: var(--muted); font-size: 0.84rem; }
+    .panel-link { flex: 0 0 auto; color: var(--primary-dark); font-size: 0.83rem; font-weight: 750; }
+    .panel-link:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .appointment-list, .patient-list, .quick-link-list { display: grid; }
+    .appointment-row { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 14px 0; border-top: 1px solid #edf2ef; }
+    .appointment-date { padding: 7px 5px; border-radius: 12px; background: var(--surface-soft); color: var(--primary-dark); text-align: center; }
+    .appointment-date strong, .appointment-date span { display: block; }
+    .appointment-date strong { font-size: 1.08rem; line-height: 1.1; }
+    .appointment-date span { margin-top: 3px; font-size: 0.67rem; font-weight: 750; letter-spacing: 0.06em; text-transform: uppercase; }
+    .appointment-person { min-width: 0; }
+    .appointment-person strong, .appointment-person span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .appointment-person strong { font-size: 0.9rem; }
+    .appointment-person span { margin-top: 4px; color: var(--muted); font-size: 0.79rem; }
+    .appointment-time { color: #50675e; font-size: 0.79rem; font-weight: 700; white-space: nowrap; }
+    .empty-state { padding: 26px 18px; border: 1px dashed #d5e4dc; border-radius: 14px; background: #fbfdfb; text-align: center; }
+    .empty-icon { width: 43px; height: 43px; display: grid; place-items: center; margin: 0 auto 10px; border-radius: 14px; background: var(--primary-pale); color: var(--primary-dark); }
+    .empty-icon svg { width: 21px; height: 21px; }
+    .empty-state strong { display: block; font-size: 0.91rem; }
+    .empty-state p { margin: 5px 0 14px; color: var(--muted); font-size: 0.82rem; }
+    .empty-state .button { min-height: 40px; padding: 9px 14px; font-size: 0.83rem; }
+    .quick-link-list { gap: 9px; }
+    .quick-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border: 1px solid #e8efeb;
+        border-radius: 13px;
+        color: var(--ink);
+        transition: border-color 150ms ease, background 150ms ease, transform 150ms ease;
+    }
+    .quick-link:hover { transform: translateY(-1px); border-color: #c7ded2; background: #fbfdfb; }
+    .quick-link-icon { width: 38px; height: 38px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 11px; background: var(--primary-pale); color: var(--primary-dark); }
+    .quick-link-icon svg { width: 19px; height: 19px; }
+    .quick-link-copy { min-width: 0; flex: 1; }
+    .quick-link-copy strong, .quick-link-copy span { display: block; }
+    .quick-link-copy strong { font-size: 0.84rem; }
+    .quick-link-copy span { margin-top: 2px; color: var(--muted); font-size: 0.74rem; }
+    .quick-link-arrow { color: #8da39a; font-size: 1.1rem; }
+    .patient-row { display: flex; align-items: center; gap: 12px; padding: 13px 0; border-top: 1px solid #edf2ef; }
+    .patient-avatar { width: 39px; height: 39px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; background: #e5f2eb; color: var(--primary-dark); font-size: 0.84rem; font-weight: 800; }
+    .patient-copy { min-width: 0; flex: 1; }
+    .patient-copy strong, .patient-copy span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .patient-copy strong { font-size: 0.88rem; }
+    .patient-copy span { margin-top: 3px; color: var(--muted); font-size: 0.77rem; }
+    .patient-meta { color: #84938c; font-size: 0.75rem; white-space: nowrap; }
+    @media (max-width: 900px) {
+        .dashboard-body .page { width: min(100% - 36px, 760px); margin-top: 30px; }
+        .dashboard-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .dashboard-columns { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+        .dashboard-body .page { width: calc(100% - 32px); margin-top: 24px; }
+        .dashboard { gap: 19px; }
+        .dashboard-welcome { align-items: stretch; flex-direction: column; gap: 17px; }
+        .dashboard-welcome .button { width: 100%; }
+        .dashboard-stats { gap: 10px; }
+        .stat-card { min-height: 132px; padding: 15px; border-radius: 15px; }
+        .stat-label { font-size: 0.76rem; }
+        .stat-icon { width: 34px; height: 34px; }
+        .stat-value { font-size: 1.8rem; }
+        .dashboard-panel { padding: 19px 16px; border-radius: 16px; }
+        .appointment-row { grid-template-columns: 49px minmax(0, 1fr); gap: 10px; }
+        .appointment-time { grid-column: 2; margin-top: -6px; }
+        .patient-meta { display: none; }
+    }
+</style>
+{% endblock %}
 {% block content %}
-<div class="card">
-    <div class="grid" style="grid-template-columns: 1fr auto; align-items: start; gap: 22px;">
+<div class="dashboard">
+    <section class="dashboard-welcome" aria-labelledby="dashboard-title">
         <div>
-            <h1 class="page-title">Dashboard</h1>
-            <p class="page-subtitle">Quickly manage patients, consultations, prescriptions, follow-ups, and medical records from a single screen.</p>
+            <div class="dashboard-date">{% now "l, F j, Y" %}</div>
+            <h1 id="dashboard-title">Welcome back{% if request.user.first_name %}, {{ request.user.first_name }}{% endif %}</h1>
+            <p>Here’s a clear view of your care workspace today.</p>
         </div>
-        <div class="actions" style="justify-content: flex-end;">
-            <a class="button" href="{% url 'add_patient' %}">Register Patient</a>
-            <a class="button secondary" href="{% url 'consultations' %}">View Consultations</a>
-        </div>
-    </div>
-    <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); margin-top: 26px;">
-        <div class="card" style="padding: 22px;">
-            <h2 style="margin-top: 0;">Recent Patients</h2>
-            <p class="secondary-text">Most recent patient registrations from your practice.</p>
-            {% if patients %}
-                <ul style="margin: 18px 0 0; padding-left: 20px;">
-                    {% for patient in patients %}
-                        <li>{{ patient.name }} - {{ patient.village }}</li>
-                    {% endfor %}
-                </ul>
-            {% else %}
-                <p class="secondary-text">No patients yet. Start by registering a new patient.</p>
-            {% endif %}
-        </div>
-        <div class="card" style="padding: 22px;">
-            <h2 style="margin-top: 0;">Upcoming Consultations</h2>
-            <p class="secondary-text">Scheduled video consultations waiting in your queue.</p>
+        <a class="button" href="{% url 'add_patient' %}">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Register a patient
+        </a>
+    </section>
+
+    <section class="dashboard-stats" aria-label="Practice overview">
+        <article class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">Total patients</span>
+                <span class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20m6-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-5v6m-3-3h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            </div>
+            <div class="stat-value">{{ patient_count }}</div>
+            <div class="stat-detail">Registered in your workspace</div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">Upcoming consultations</span>
+                <span class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3v3m8-3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v12H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+            <div class="stat-value">{{ upcoming_count }}</div>
+            <div class="stat-detail">Scheduled for today or later</div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">Follow-ups</span>
+                <span class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M20 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 20l.9-4.7a8.4 8.4 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 12h8m-4-4v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+            </div>
+            <div class="stat-value">{{ followup_count }}</div>
+            <div class="stat-detail">Follow-up plans on record</div>
+        </article>
+        <article class="stat-card">
+            <div class="stat-top">
+                <span class="stat-label">Medical records</span>
+                <span class="stat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v6h5m-9 4h5m-5 4h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </div>
+            <div class="stat-value">{{ record_count }}</div>
+            <div class="stat-detail">Documents saved for patients</div>
+        </article>
+    </section>
+
+    <div class="dashboard-columns">
+        <section class="dashboard-panel" aria-labelledby="appointments-title">
+            <div class="panel-heading">
+                <div>
+                    <h2 id="appointments-title">Upcoming consultations</h2>
+                    <p>Your next scheduled patient visits</p>
+                </div>
+                <a class="panel-link" href="{% url 'consultations' %}">View all</a>
+            </div>
             {% if upcoming_sessions %}
-                <ul style="margin: 18px 0 0; padding-left: 20px;">
+                <div class="appointment-list">
                     {% for session in upcoming_sessions %}
-                        <li>{{ session.patient.name }} � {{ session.scheduled_at|date:'M d, Y H:i' }}</li>
+                        <article class="appointment-row">
+                            <div class="appointment-date">
+                                <strong>{{ session.scheduled_at|date:"d" }}</strong>
+                                <span>{{ session.scheduled_at|date:"M" }}</span>
+                            </div>
+                            <div class="appointment-person">
+                                <strong>{{ session.patient.name }}</strong>
+                                <span>{{ session.patient.village }}</span>
+                            </div>
+                            <div class="appointment-time">{{ session.scheduled_at|date:"g:i A" }}</div>
+                        </article>
                     {% endfor %}
-                </ul>
+                </div>
             {% else %}
-                <p class="secondary-text">No upcoming consultations scheduled.</p>
+                <div class="empty-state">
+                    <span class="empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3v3m8-3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v12H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <strong>No upcoming consultations</strong>
+                    <p>Schedule a visit to see it appear here.</p>
+                    <a class="button" href="{% url 'add_consultation' %}">Schedule consultation</a>
+                </div>
             {% endif %}
-        </div>
+        </section>
+
+        <section class="dashboard-panel" aria-labelledby="actions-title">
+            <div class="panel-heading">
+                <div>
+                    <h2 id="actions-title">Quick actions</h2>
+                    <p>Common tasks, one click away</p>
+                </div>
+            </div>
+            <div class="quick-link-list">
+                <a class="quick-link" href="{% url 'add_patient' %}">
+                    <span class="quick-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20m6-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-5v6m-3-3h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                    <span class="quick-link-copy"><strong>Register patient</strong><span>Add someone to your care list</span></span>
+                    <span class="quick-link-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+                <a class="quick-link" href="{% url 'add_consultation' %}">
+                    <span class="quick-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3v3m8-3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v12H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="quick-link-copy"><strong>Schedule consultation</strong><span>Plan a patient visit</span></span>
+                    <span class="quick-link-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+                <a class="quick-link" href="{% url 'add_prescription' %}">
+                    <span class="quick-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v6h5m-9 4h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="quick-link-copy"><strong>Upload prescription</strong><span>Save treatment details</span></span>
+                    <span class="quick-link-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+                <a class="quick-link" href="{% url 'add_followup' %}">
+                    <span class="quick-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M8 3v3m8-3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v12H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="m9 14 2 2 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                    <span class="quick-link-copy"><strong>Plan a follow-up</strong><span>Keep the next step in view</span></span>
+                    <span class="quick-link-arrow" aria-hidden="true">&rarr;</span>
+                </a>
+            </div>
+        </section>
     </div>
-    <div class="card" style="margin-top: 24px;">
-        <h2>Core Platform Features</h2>
-        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-top: 18px;">
-            {% for feature in features %}
-                <div class="feature-item">{{ feature }}</div>
-            {% endfor %}
+
+    <section class="dashboard-panel" aria-labelledby="patients-title">
+        <div class="panel-heading">
+            <div>
+                <h2 id="patients-title">Recently added patients</h2>
+                <p>Your latest patient registrations</p>
+            </div>
+            <a class="panel-link" href="{% url 'patients' %}">View all patients</a>
         </div>
-    </div>
-    <div class="card" style="margin-top: 24px;">
-        <h2>Quick Actions</h2>
-        <div class="actions">
-            <a class="button" href="{% url 'add_patient' %}">New Patient</a>
-            <a class="button" href="{% url 'add_consultation' %}">New Consultation</a>
-            <a class="button" href="{% url 'add_prescription' %}">Upload Prescription</a>
-            <a class="button" href="{% url 'add_followup' %}">Add Follow-up</a>
-            <a class="button" href="{% url 'add_medical_record' %}">Save Record</a>
-        </div>
-    </div>
+        {% if patients %}
+            <div class="patient-list">
+                {% for patient in patients %}
+                    <article class="patient-row">
+                        <span class="patient-avatar" aria-hidden="true">{{ patient.name|first|upper }}</span>
+                        <span class="patient-copy">
+                            <strong>{{ patient.name }}</strong>
+                            <span>{{ patient.village }}</span>
+                        </span>
+                        <span class="patient-meta">Added {{ patient.created_at|date:"M j" }}</span>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <span class="empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20m6-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-5v6m-3-3h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                <strong>Your patient list starts here</strong>
+                <p>Register your first patient to keep their care details organized.</p>
+                <a class="button" href="{% url 'add_patient' %}">Register a patient</a>
+            </div>
+        {% endif %}
+    </section>
 </div>
 {% endblock %}

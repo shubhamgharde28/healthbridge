@@ -1,40 +1,124 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} | Rural Telemedicine Platform</title>
-    <style>
-        body { font-family: Arial, sans-serif; background: #eef4fb; margin: 0; color: #1c2030; }
-        .page { max-width: 640px; margin: 44px auto; padding: 30px; background: white; border-radius: 14px; box-shadow: 0 18px 36px rgba(0,0,0,0.07); }
-        h1 { margin-top: 0; }
-        .form-field { margin-bottom: 16px; }
-        label { display: block; margin-bottom: 6px; font-weight: 600; }
-        .form-input, .form-select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ccd7eb; }
-        .submit-button { width: 100%; padding: 14px; background: #2f6bed; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; }
-        .message { margin-bottom: 16px; padding: 12px; border-radius: 10px; background: #e9f2ff; }
-    </style>
-</head>
-<body>
-    <main class="page">
-        <h1>{{ title }}</h1>
-        {% for message in messages %}
-            <div class="message">{{ message }}</div>
-        {% endfor %}
+{% extends "registration/base.html" %}
+{% block title %}Add a medical record | HealthBridge{% endblock %}
+{% block body_class %}medical-record-form-body{% endblock %}
+{% block extra_head %}
+<style>
+    .medical-record-form-body .page { width: min(1080px, calc(100% - 48px)); margin-top: 38px; }
+    .medical-record-form-layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .72fr); gap: 22px; align-items: start; }
+    .medical-record-form-panel, .medical-record-info-panel { border: 1px solid var(--border); border-radius: 22px; background: #fff; box-shadow: 0 14px 40px rgba(24, 66, 54, .06); }
+    .medical-record-form-panel { padding: clamp(24px, 4vw, 42px); }
+    .medical-record-form-heading { margin-bottom: 28px; }
+    .medical-record-form-kicker { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 13px; color: var(--primary-dark); font-size: .76rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .medical-record-form-kicker::before { width: 7px; height: 7px; border-radius: 50%; background: #36a47e; content: ""; }
+    .medical-record-form-heading h1 { margin: 0; font-size: clamp(1.9rem, 4vw, 2.5rem); letter-spacing: -.055em; line-height: 1.12; }
+    .medical-record-form-heading p { max-width: 580px; margin: 10px 0 0; color: var(--muted); }
+    .medical-record-fields { display: grid; gap: 21px; }
+    .medical-record-field { display: grid; align-content: start; gap: 8px; }
+    .medical-record-field label { color: #344f46; font-size: .88rem; font-weight: 700; }
+    .medical-record-required { color: var(--primary); }
+    .medical-record-field select, .medical-record-field input { min-height: 50px; }
+    .medical-record-field textarea { min-height: 135px; }
+    .medical-record-field input::placeholder, .medical-record-field textarea::placeholder { color: #9aa9a2; }
+    .medical-record-field input[type="file"] { padding: 11px 13px; background: #fbfdfb; }
+    .medical-record-help { color: #819089; font-size: .78rem; line-height: 1.5; }
+    .medical-record-field-error { margin: 0; color: #a33e3e; font-size: .81rem; }
+    .medical-record-field-error + select, .medical-record-field-error + input, .medical-record-field-error + textarea { border-color: #d99191; }
+    .medical-record-form-error { margin-bottom: 20px; }
+    .medical-record-form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; padding-top: 22px; border-top: 1px solid #edf2ef; }
+    .medical-record-form-actions .button { min-width: 165px; }
+    .medical-record-info-panel { overflow: hidden; }
+    .medical-record-info-top { padding: 26px; background: linear-gradient(145deg, #174e40, #10372f); color: #fff; }
+    .medical-record-info-icon { width: 46px; height: 46px; display: grid; place-items: center; margin-bottom: 19px; border: 1px solid rgba(255,255,255,.2); border-radius: 14px; background: rgba(255,255,255,.1); color: #d7f4e4; }
+    .medical-record-info-icon svg { width: 23px; height: 23px; }
+    .medical-record-info-top h2 { margin: 0; font-size: 1.22rem; letter-spacing: -.035em; }
+    .medical-record-info-top p { margin: 8px 0 0; color: rgba(255,255,255,.73); font-size: .88rem; line-height: 1.65; }
+    .medical-record-info-list { display: grid; gap: 17px; padding: 23px 25px 25px; }
+    .medical-record-info-item { display: flex; align-items: flex-start; gap: 12px; }
+    .medical-record-check { width: 23px; height: 23px; flex: 0 0 auto; display: grid; place-items: center; margin-top: 1px; border-radius: 50%; background: var(--primary-pale); color: var(--primary-dark); font-size: .8rem; font-weight: 800; }
+    .medical-record-info-item strong, .medical-record-info-item span { display: block; }
+    .medical-record-info-item strong { font-size: .84rem; }
+    .medical-record-info-item span { margin-top: 3px; color: var(--muted); font-size: .78rem; line-height: 1.5; }
+    .medical-record-privacy { margin: 0 25px 24px; padding: 12px 13px; border: 1px solid #e6efea; border-radius: 12px; background: #f8fbf9; color: #687b72; font-size: .76rem; line-height: 1.55; }
+    @media (max-width: 800px) {
+        .medical-record-form-body .page { width: min(100% - 36px, 680px); margin-top: 30px; }
+        .medical-record-form-layout { grid-template-columns: 1fr; }
+        .medical-record-info-panel { display: grid; grid-template-columns: 1fr 1fr; }
+        .medical-record-info-top { grid-row: span 2; }
+        .medical-record-info-list { padding: 22px; }
+        .medical-record-privacy { margin: 0 22px 22px; }
+    }
+    @media (max-width: 560px) {
+        .medical-record-form-body .page { width: calc(100% - 32px); margin-top: 23px; }
+        .medical-record-form-panel { padding: 24px 20px; border-radius: 18px; }
+        .medical-record-form-heading { margin-bottom: 23px; }
+        .medical-record-form-actions { flex-direction: column; }
+        .medical-record-form-actions .button { width: 100%; }
+        .medical-record-info-panel { display: block; border-radius: 18px; }
+        .medical-record-info-top { padding: 23px; }
+        .medical-record-info-list { padding: 21px 23px; }
+        .medical-record-privacy { margin: 0 23px 22px; }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<section class="medical-record-form-layout" aria-labelledby="medical-record-form-title">
+    <div class="medical-record-form-panel">
+        <header class="medical-record-form-heading">
+            <div class="medical-record-form-kicker">Patient care</div>
+            <h1 id="medical-record-form-title">{{ title|default:"Add a medical record" }}</h1>
+            <p>Save important care notes or attach a document to a patient's record.</p>
+        </header>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {% for field in form %}
-                <div class="form-field">
-                    {{ field.label_tag }}
-                    {{ field }}
-                    {% if field.errors %}
-                        <div class="message">{{ field.errors|first }}</div>
-                    {% endif %}
-                </div>
-            {% endfor %}
-            <button class="submit-button" type="submit">Save Medical Record</button>
+            {% if form.non_field_errors %}
+                <div class="message error medical-record-form-error" role="alert">{{ form.non_field_errors|first }}</div>
+            {% endif %}
+            <div class="medical-record-fields">
+                {% for field in form %}
+                    <div class="medical-record-field {{ field.name }}">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}<span class="medical-record-required" aria-label="required">*</span>{% endif %}
+                        </label>
+                        {% if field.errors %}<p class="medical-record-field-error" id="{{ field.id_for_label }}-error" role="alert">{{ field.errors|first }}</p>{% endif %}
+                        {{ field }}
+                        {% if field.name == "details" %}<span class="medical-record-help">Optional — add relevant context or notes for future care.</span>{% endif %}
+                        {% if field.name == "record_file" %}<span class="medical-record-help">Optional — attach a document from your device.</span>{% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="medical-record-form-actions">
+                <button class="button" type="submit">
+                    Save medical record
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <a class="button secondary" href="{% url 'medical_records' %}">Cancel</a>
+            </div>
         </form>
-        <p><a href="{% url 'medical_records' %}">Back to Medical Records</a></p>
-    </main>
-</body>
-</html>
+    </div>
+    <aside class="medical-record-info-panel" aria-label="Medical record information">
+        <div class="medical-record-info-top">
+            <div class="medical-record-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M7 3h7l5 5v13H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 3v6h5m-9 4h5m-5 4h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h2>Keep care history connected.</h2>
+            <p>Organize useful patient notes and documents alongside the rest of their care details.</p>
+        </div>
+        <div class="medical-record-info-list">
+            <div class="medical-record-info-item">
+                <span class="medical-record-check" aria-hidden="true">✓</span>
+                <span><strong>Choose the right patient</strong><span>Only patients in your workspace are available.</span></span>
+            </div>
+            <div class="medical-record-info-item">
+                <span class="medical-record-check" aria-hidden="true">✓</span>
+                <span><strong>Use a clear record title</strong><span>Make it easy to recognize this information later.</span></span>
+            </div>
+            <div class="medical-record-info-item">
+                <span class="medical-record-check" aria-hidden="true">✓</span>
+                <span><strong>Add notes or a document</strong><span>Include details here or attach a file when available.</span></span>
+            </div>
+        </div>
+        <p class="medical-record-privacy">Medical record details are saved with the selected patient's care information.</p>
+    </aside>
+</section>
+{% endblock %}

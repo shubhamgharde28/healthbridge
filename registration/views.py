@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
+from django.utils import timezone
 
 from .forms import (
     ConsultationForm,
@@ -63,16 +64,19 @@ def logout_view(request):
 @login_required(login_url='login')
 def dashboard_view(request):
     patients = Patient.objects.filter(created_by=request.user).order_by('-created_at')[:5]
-    upcoming_sessions = Consultation.objects.filter(patient__created_by=request.user, status='scheduled').order_by('scheduled_at')[:5]
+    user_patients = Patient.objects.filter(created_by=request.user)
+    upcoming_consultations = Consultation.objects.filter(
+        patient__created_by=request.user,
+        status='scheduled',
+        scheduled_at__gte=timezone.now(),
+    )
+    upcoming_sessions = upcoming_consultations.select_related('patient').order_by('scheduled_at')[:5]
     return render(request, 'registration/home.html', {
         'user_email': request.user.email,
-        'features': [
-            'Patient registration',
-            'Video consultation links',
-            'Prescription upload',
-            'Follow-up scheduling',
-            'Medical records',
-        ],
+        'patient_count': user_patients.count(),
+        'upcoming_count': upcoming_consultations.count(),
+        'record_count': MedicalRecord.objects.filter(patient__created_by=request.user).count(),
+        'followup_count': FollowUp.objects.filter(patient__created_by=request.user).count(),
         'patients': patients,
         'upcoming_sessions': upcoming_sessions,
     })

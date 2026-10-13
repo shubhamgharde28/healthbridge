@@ -1,34 +1,94 @@
 {% extends "registration/base.html" %}
-{% block title %}Patients | Rural Telemedicine{% endblock %}
+{% block title %}Patients | HealthBridge{% endblock %}
+{% block body_class %}list-page-body{% endblock %}
+{% block extra_head %}
+<style>
+    .list-page-body .page { width: min(1100px, calc(100% - 48px)); margin-top: 38px; }
+    .list-page { display: grid; gap: 22px; }
+    .list-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; }
+    .list-kicker { margin-bottom: 9px; color: var(--primary-dark); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+    .list-heading h1 { margin: 0; font-size: clamp(2rem, 4vw, 2.65rem); letter-spacing: -0.06em; line-height: 1.12; }
+    .list-heading p { margin: 9px 0 0; color: var(--muted); }
+    .list-heading .button { flex: 0 0 auto; }
+    .list-panel { overflow: hidden; border: 1px solid var(--border); border-radius: 19px; background: #fff; box-shadow: 0 12px 34px rgba(24, 66, 54, 0.055); }
+    .list-panel-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 20px 23px; border-bottom: 1px solid #e9f0ec; }
+    .list-panel-top h2 { margin: 0; font-size: 1rem; letter-spacing: -0.02em; }
+    .list-count { padding: 5px 10px; border-radius: 999px; background: var(--primary-pale); color: var(--primary-dark); font-size: 0.76rem; font-weight: 750; }
+    .patient-table { min-width: 620px; }
+    .patient-table th { padding: 12px 22px; background: #f8fbf9; color: #788981; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; }
+    .patient-table td { padding: 15px 22px; color: #53675e; font-size: 0.88rem; }
+    .patient-table tbody tr:hover { background: #fbfdfb; }
+    .patient-name-cell { display: flex; align-items: center; gap: 12px; color: var(--ink); font-weight: 700; }
+    .patient-list-avatar { width: 38px; height: 38px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 12px; background: var(--primary-pale); color: var(--primary-dark); font-size: 0.82rem; font-weight: 800; }
+    .patient-contact { color: var(--primary-dark); }
+    .list-empty { padding: 54px 24px; text-align: center; }
+    .list-empty-icon { width: 52px; height: 52px; display: grid; place-items: center; margin: 0 auto 14px; border-radius: 17px; background: var(--primary-pale); color: var(--primary-dark); }
+    .list-empty-icon svg { width: 25px; height: 25px; }
+    .list-empty h2 { margin: 0; font-size: 1.12rem; letter-spacing: -0.03em; }
+    .list-empty p { margin: 7px 0 19px; color: var(--muted); font-size: 0.9rem; }
+    .list-empty .button { min-height: 43px; padding: 10px 16px; }
+    @media (max-width: 800px) {
+        .list-page-body .page { width: min(100% - 36px, 760px); margin-top: 30px; }
+    }
+    @media (max-width: 560px) {
+        .list-page-body .page { width: calc(100% - 32px); margin-top: 23px; }
+        .list-heading { align-items: stretch; flex-direction: column; gap: 17px; }
+        .list-heading .button { width: 100%; }
+        .list-panel-top { padding: 17px; }
+        .list-empty { padding: 42px 18px; }
+    }
+</style>
+{% endblock %}
 {% block content %}
-<div class="card">
-    <div class="grid" style="grid-template-columns: 1fr auto; align-items: center; gap: 12px;">
+<section class="list-page" aria-labelledby="patients-title">
+    <header class="list-heading">
         <div>
-            <h1 class="page-title">Patients</h1>
-            <p class="page-subtitle">View all patient registrations created by your account.</p>
+            <div class="list-kicker">Care workspace</div>
+            <h1 id="patients-title">Your patients</h1>
+            <p>Keep patient details organized and easy to find.</p>
         </div>
-        <a class="button" href="{% url 'add_patient' %}">Add Patient</a>
-    </div>
-    <div class="table-wrapper" style="margin-top: 24px;">
+        <a class="button" href="{% url 'add_patient' %}">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14m-7-7h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            Register a patient
+        </a>
+    </header>
+
+    <section class="list-panel" aria-labelledby="patient-list-title">
+        <div class="list-panel-top">
+            <h2 id="patient-list-title">Patient directory</h2>
+            <span class="list-count">{{ patients|length }} patient{{ patients|length|pluralize }}</span>
+        </div>
         {% if patients %}
-            <table>
-                <thead>
-                    <tr><th>Name</th><th>Age</th><th>Village</th><th>Phone</th></tr>
-                </thead>
-                <tbody>
-                    {% for patient in patients %}
-                        <tr>
-                            <td>{{ patient.name }}</td>
-                            <td>{{ patient.age }}</td>
-                            <td>{{ patient.village }}</td>
-                            <td>{{ patient.phone|default:'-' }}</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div class="table-wrapper" style="border: 0; border-radius: 0;">
+                <table class="patient-table">
+                    <thead>
+                        <tr><th scope="col">Patient</th><th scope="col">Age</th><th scope="col">Village</th><th scope="col">Phone</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for patient in patients %}
+                            <tr>
+                                <td>
+                                    <div class="patient-name-cell">
+                                        <span class="patient-list-avatar" aria-hidden="true">{{ patient.name|first|upper }}</span>
+                                        {{ patient.name }}
+                                    </div>
+                                </td>
+                                <td>{{ patient.age }} years</td>
+                                <td>{{ patient.village }}</td>
+                                <td>{% if patient.phone %}<span class="patient-contact">{{ patient.phone }}</span>{% else %}<span class="secondary-text">Not provided</span>{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         {% else %}
-            <div class="message" style="background: #eef5ff; color: #234a9e;">No patients registered yet. Click "Add Patient" to begin.</div>
+            <div class="list-empty">
+                <span class="list-empty-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M16 20v-1.5a3.5 3.5 0 0 0-3.5-3.5h-5A3.5 3.5 0 0 0 4 18.5V20m6-9a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm8-5v6m-3-3h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+                <h2>Your patient directory is ready</h2>
+                <p>Register your first patient to start organizing their care details here.</p>
+                <a class="button" href="{% url 'add_patient' %}">Register a patient</a>
+            </div>
         {% endif %}
-    </div>
-</div>
+    </section>
+</section>
 {% endblock %}

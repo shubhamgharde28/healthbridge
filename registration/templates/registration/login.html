@@ -1,23 +1,39 @@
 {% extends "registration/base.html" %}
-{% block title %}Login | Rural Telemedicine{% endblock %}
+{% block title %}Log in | HealthBridge{% endblock %}
 {% block content %}
-<div class="card">
-    <h1 class="page-title">Login</h1>
-    <p class="page-subtitle">Sign in with your registered email to access the telemedicine dashboard.</p>
-    <form method="post" class="grid" style="gap: 18px; margin-top: 24px;">
-        {% csrf_token %}
-        <div class="form-row">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" required placeholder="example@domain.com">
+<section class="auth-page" aria-labelledby="login-title">
+    <div class="auth-card">
+        <div class="auth-form-panel">
+            <div class="auth-kicker">Welcome back</div>
+            <h1 class="auth-title" id="login-title">Good to see you.</h1>
+            <p class="auth-description">Log in to continue caring for your patients with HealthBridge.</p>
+            <form method="post" class="auth-form">
+                {% csrf_token %}
+                <div class="auth-field">
+                    <label for="email">Email address</label>
+                    <input id="email" name="email" type="email" autocomplete="email" required autofocus placeholder="you@example.com">
+                </div>
+                <div class="auth-field">
+                    <label for="password">Password</label>
+                    <input id="password" name="password" type="password" autocomplete="current-password" required placeholder="Enter your password">
+                </div>
+                <button class="button auth-submit" type="submit">
+                    Log in
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+            </form>
+            <p class="auth-switch">New to HealthBridge? <a href="{% url 'signup' %}">Create an account</a></p>
         </div>
-        <div class="form-row">
-            <label for="password">Password</label>
-            <input id="password" name="password" type="password" required placeholder="Password">
-        </div>
-        <div class="form-actions">
-            <button class="button" type="submit">Login</button>
-            <a class="button secondary" href="{% url 'signup' %}">Create Account</a>
-        </div>
-    </form>
-</div>
+        <aside class="auth-aside">
+            <div class="auth-aside-content">
+                <div class="auth-aside-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M3 12h4l2.2-5 4.1 10 2.1-5H21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.5"/></svg>
+                </div>
+                <h2>Good care starts with a clear connection.</h2>
+                <p>Keep patients, consultations, follow-ups, and important records together in one thoughtful workspace.</p>
+            </div>
+            <div class="auth-aside-bottom">Care, connected — wherever it happens.</div>
+        </aside>
+    </div>
+</section>
 {% endblock %}

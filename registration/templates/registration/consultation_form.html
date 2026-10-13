@@ -1,22 +1,134 @@
 {% extends "registration/base.html" %}
-{% block title %}Schedule Consultation | Rural Telemedicine{% endblock %}
+{% block title %}Schedule a consultation | HealthBridge{% endblock %}
+{% block body_class %}consultation-form-body{% endblock %}
+{% block extra_head %}
+<style>
+    .consultation-form-body .page { width: min(1080px, calc(100% - 48px)); margin-top: 38px; }
+    .consultation-form-layout { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, 0.72fr); gap: 22px; align-items: start; }
+    .consultation-form-panel, .consultation-info-panel {
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        background: #fff;
+        box-shadow: 0 14px 40px rgba(24, 66, 54, 0.06);
+    }
+    .consultation-form-panel { padding: clamp(24px, 4vw, 42px); }
+    .consultation-form-heading { margin-bottom: 28px; }
+    .consultation-kicker { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 13px; color: var(--primary-dark); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; }
+    .consultation-kicker::before { width: 7px; height: 7px; border-radius: 50%; background: #36a47e; content: ""; }
+    .consultation-form-heading h1 { margin: 0; font-size: clamp(1.9rem, 4vw, 2.5rem); letter-spacing: -0.055em; line-height: 1.12; }
+    .consultation-form-heading p { max-width: 580px; margin: 10px 0 0; color: var(--muted); }
+    .consultation-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 21px 17px; }
+    .consultation-field { display: grid; align-content: start; gap: 8px; }
+    .consultation-field.patient, .consultation-field.video_link, .consultation-field.notes, .consultation-form-error { grid-column: 1 / -1; }
+    .consultation-field label { color: #344f46; font-size: 0.88rem; font-weight: 700; }
+    .consultation-required { color: var(--primary); }
+    .consultation-field select, .consultation-field input { min-height: 50px; }
+    .consultation-field textarea { min-height: 120px; }
+    .consultation-field input::placeholder, .consultation-field textarea::placeholder { color: #9aa9a2; }
+    .consultation-help { color: #819089; font-size: 0.78rem; line-height: 1.5; }
+    .consultation-field-error { margin: 0; color: #a33e3e; font-size: 0.81rem; }
+    .consultation-field-error + select,
+    .consultation-field-error + input,
+    .consultation-field-error + textarea { border-color: #d99191; }
+    .consultation-form-error { margin-bottom: 20px; }
+    .consultation-form-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; padding-top: 22px; border-top: 1px solid #edf2ef; }
+    .consultation-form-actions .button { min-width: 170px; }
+    .consultation-info-panel { overflow: hidden; }
+    .consultation-info-top { padding: 26px; background: linear-gradient(145deg, #174e40, #10372f); color: #fff; }
+    .consultation-info-icon { width: 46px; height: 46px; display: grid; place-items: center; margin-bottom: 19px; border: 1px solid rgba(255,255,255,.2); border-radius: 14px; background: rgba(255,255,255,.1); color: #d7f4e4; }
+    .consultation-info-icon svg { width: 23px; height: 23px; }
+    .consultation-info-top h2 { margin: 0; font-size: 1.22rem; letter-spacing: -0.035em; }
+    .consultation-info-top p { margin: 8px 0 0; color: rgba(255,255,255,.73); font-size: 0.88rem; line-height: 1.65; }
+    .consultation-info-list { display: grid; gap: 17px; padding: 23px 25px 25px; }
+    .consultation-info-item { display: flex; align-items: flex-start; gap: 12px; }
+    .consultation-check { width: 23px; height: 23px; flex: 0 0 auto; display: grid; place-items: center; margin-top: 1px; border-radius: 50%; background: var(--primary-pale); color: var(--primary-dark); font-size: 0.8rem; font-weight: 800; }
+    .consultation-info-item strong, .consultation-info-item span { display: block; }
+    .consultation-info-item strong { font-size: 0.84rem; }
+    .consultation-info-item span { margin-top: 3px; color: var(--muted); font-size: 0.78rem; line-height: 1.5; }
+    .consultation-privacy { margin: 0 25px 24px; padding: 12px 13px; border: 1px solid #e6efea; border-radius: 12px; background: #f8fbf9; color: #687b72; font-size: 0.76rem; line-height: 1.55; }
+    @media (max-width: 800px) {
+        .consultation-form-body .page { width: min(100% - 36px, 680px); margin-top: 30px; }
+        .consultation-form-layout { grid-template-columns: 1fr; }
+        .consultation-info-panel { display: grid; grid-template-columns: 1fr 1fr; }
+        .consultation-info-top { grid-row: span 2; }
+        .consultation-info-list { padding: 22px; }
+        .consultation-privacy { margin: 0 22px 22px; }
+    }
+    @media (max-width: 560px) {
+        .consultation-form-body .page { width: calc(100% - 32px); margin-top: 23px; }
+        .consultation-form-panel { padding: 24px 20px; border-radius: 18px; }
+        .consultation-form-heading { margin-bottom: 23px; }
+        .consultation-fields { grid-template-columns: 1fr; gap: 18px; }
+        .consultation-field.patient, .consultation-field.video_link, .consultation-field.notes, .consultation-form-error { grid-column: auto; }
+        .consultation-form-actions { flex-direction: column; }
+        .consultation-form-actions .button { width: 100%; }
+        .consultation-info-panel { display: block; border-radius: 18px; }
+        .consultation-info-top { padding: 23px; }
+        .consultation-info-list { padding: 21px 23px; }
+        .consultation-privacy { margin: 0 23px 22px; }
+    }
+</style>
+{% endblock %}
 {% block content %}
-<div class="card">
-    <h1 class="page-title">{{ title }}</h1>
-    <p class="page-subtitle">Schedule a video consultation and attach a session link for your patient.</p>
-    <form method="post" class="grid" style="gap: 18px; margin-top: 24px;">
-        {% csrf_token %}
-        {% for field in form %}
-            <div class="form-row">
-                {{ field.label_tag }}
-                {{ field }}
-                {% if field.errors %}<div class="message error">{{ field.errors|first }}</div>{% endif %}
+<section class="consultation-form-layout" aria-labelledby="consultation-form-title">
+    <div class="consultation-form-panel">
+        <header class="consultation-form-heading">
+            <div class="consultation-kicker">Care schedule</div>
+            <h1 id="consultation-form-title">{{ title|default:"Schedule a consultation" }}</h1>
+            <p>Choose a patient and set up the details for their next visit.</p>
+        </header>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.non_field_errors %}
+                <div class="message error consultation-form-error" role="alert">{{ form.non_field_errors|first }}</div>
+            {% endif %}
+            <div class="consultation-fields">
+                {% for field in form %}
+                    <div class="consultation-field {{ field.name }}">
+                        <label for="{{ field.id_for_label }}">
+                            {{ field.label }}
+                            {% if field.field.required %}<span class="consultation-required" aria-label="required">*</span>{% endif %}
+                        </label>
+                        {% if field.errors %}<p class="consultation-field-error" id="{{ field.id_for_label }}-error" role="alert">{{ field.errors|first }}</p>{% endif %}
+                        {{ field }}
+                        {% if field.name == "scheduled_at" %}<span class="consultation-help">Select the local date and time agreed with the patient.</span>{% endif %}
+                        {% if field.name == "video_link" %}<span class="consultation-help">Optional — add a secure meeting link if one is available.</span>{% endif %}
+                        {% if field.name == "notes" %}<span class="consultation-help">Optional — include context to help prepare for the visit.</span>{% endif %}
+                    </div>
+                {% endfor %}
             </div>
-        {% endfor %}
-        <div class="form-actions">
-            <button class="button" type="submit">Save Consultation</button>
-            <a class="button secondary" href="{% url 'consultations' %}">Back to Consultations</a>
+            <div class="consultation-form-actions">
+                <button class="button" type="submit">
+                    Save consultation
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <a class="button secondary" href="{% url 'consultations' %}">Cancel</a>
+            </div>
+        </form>
+    </div>
+    <aside class="consultation-info-panel" aria-label="Consultation scheduling information">
+        <div class="consultation-info-top">
+            <div class="consultation-info-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M8 3v3m8-3v3M4 9h16M6 5h12a2 2 0 0 1 2 2v12H4V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 12v5m-2.5-2.5h5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <h2>Plan the next step in care.</h2>
+            <p>Keep the visit details connected to the selected patient, so your team can find them when needed.</p>
         </div>
-    </form>
-</div>
+        <div class="consultation-info-list">
+            <div class="consultation-info-item">
+                <span class="consultation-check" aria-hidden="true">✓</span>
+                <span><strong>Select the right patient</strong><span>Only patients in your workspace are available here.</span></span>
+            </div>
+            <div class="consultation-info-item">
+                <span class="consultation-check" aria-hidden="true">✓</span>
+                <span><strong>Set a clear date and time</strong><span>Choose when the consultation is planned to take place.</span></span>
+            </div>
+            <div class="consultation-info-item">
+                <span class="consultation-check" aria-hidden="true">✓</span>
+                <span><strong>Add the visit details</strong><span>Include a meeting link or notes when they're available.</span></span>
+            </div>
+        </div>
+        <p class="consultation-privacy">Consultation details are saved with the selected patient's care information.</p>
+    </aside>
+</section>
 {% endblock %}
